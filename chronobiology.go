@@ -38,6 +38,10 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
         err = errors.New("dateTime and data has not the same size")
         return
     }
+    if dateTime[0].Add(time.Duration(hours) * time.Hour).After( dateTime[len(dateTime)-1] ) {
+        err = errors.New("time range lower than the hours passed as parameter")
+        return
+    }
 
     for index := 0; index < len(dateTime); index++ {
 

@@ -53,7 +53,7 @@ func TestHigherActivity(t *testing.T) {
     _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
 
     if err == nil {
-        t.Error("3 - dateTime and data has different sizes")
+        t.Error("3 - expect: dateTime and data has different sizes")
     }
 
     myData = append(myData, 050) // 12
@@ -67,7 +67,7 @@ func TestHigherActivity(t *testing.T) {
     higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(5, myDateTime, myData)
 
     if err != nil {
-        t.Error("5 - error not nil")
+        t.Error("5 - expect: error not nil")
     }
     if higherActivity != 482.0 {
         t.Error("6 - expect: 482.0 - received: ", higherActivity)
@@ -79,7 +79,7 @@ func TestHigherActivity(t *testing.T) {
     higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(6, myDateTime, myData)
 
     if err != nil {
-        t.Error("8 - error not nil")
+        t.Error("8 - expect: error not nil")
     }
     if higherActivity != 418.3333 {
         t.Error("9 - expect: 418.3333 - received: ", higherActivity)
@@ -91,7 +91,7 @@ func TestHigherActivity(t *testing.T) {
     higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(7, myDateTime, myData)
 
     if err != nil {
-        t.Error("11 - error not nil")
+        t.Error("11 - expect: error not nil")
     }
     if higherActivity != 364.2857 {
         t.Error("12 - expect: 364.2857 - received: ", higherActivity)
@@ -110,5 +110,11 @@ func TestHigherActivity(t *testing.T) {
     }
     if onsetHigherActivity.Format("02/01/2006 15:04:05") != "01/01/2015 01:00:00" {
         t.Error("16 - expect: 01/01/2015 01:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
+    }
+
+    higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(20, myDateTime, myData)
+
+    if err == nil {
+        t.Error("17 - expect: time range lower than the hours passed as parameter")
     }
 }
