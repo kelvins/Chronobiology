@@ -12,9 +12,11 @@ func TestHigherActivity(t *testing.T) {
     // Get UTC
     utc, _ := time.LoadLocation("UTC")
 
+    // Create the vectors
     var myDateTime []time.Time
     var myData []float64
 
+    // Call the function with empty vectors
     _, _, err := chronobiology.HigherActivity(5, myDateTime, myData)
 
     if err == nil {
@@ -23,12 +25,13 @@ func TestHigherActivity(t *testing.T) {
 
     tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
 
-    // 1 - 12 hours
+    // Fill the myDateTime with 1 - 12 hours
     for index := 0; index < 12; index++ {
         tempDateTime = tempDateTime.Add(1 * time.Hour)
         myDateTime = append(myDateTime, tempDateTime)
     }
 
+    // Call the function with myData empty
     _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
 
     if err == nil {
@@ -55,39 +58,57 @@ func TestHigherActivity(t *testing.T) {
 
     myData = append(myData, 050) // 12
 
-    higherActivity, onsetHigherActivity, err := chronobiology.HigherActivity(5, myDateTime, myData)
+    higherActivity, onsetHigherActivity, err := chronobiology.HigherActivity(0, myDateTime, myData)
+
+    if err == nil {
+        t.Error("4 - expect: invalid hours")
+    }
+
+    higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(5, myDateTime, myData)
 
     if err != nil {
-        t.Error("4 - error not nil")
+        t.Error("5 - error not nil")
     }
     if higherActivity != 482.0 {
-        t.Error("5 - expect: 482.0 - received: ", higherActivity)
+        t.Error("6 - expect: 482.0 - received: ", higherActivity)
     }
     if onsetHigherActivity.Format("02/01/2006 15:04:05") != "01/01/2015 06:00:00" {
-        t.Error("6 - expect: 01/01/2015 06:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
+        t.Error("7 - expect: 01/01/2015 06:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
     }
 
     higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(6, myDateTime, myData)
 
     if err != nil {
-        t.Error("7 - error not nil")
+        t.Error("8 - error not nil")
     }
     if higherActivity != 418.3333 {
-        t.Error("8 - expect: 418.3333 - received: ", higherActivity)
+        t.Error("9 - expect: 418.3333 - received: ", higherActivity)
     }
     if onsetHigherActivity.Format("02/01/2006 15:04:05") != "01/01/2015 05:00:00" {
-        t.Error("9 - expect: 01/01/2015 05:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
+        t.Error("10 - expect: 01/01/2015 05:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
     }
 
     higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(7, myDateTime, myData)
 
     if err != nil {
-        t.Error("10 - error not nil")
+        t.Error("11 - error not nil")
     }
     if higherActivity != 364.2857 {
-        t.Error("11 - expect: 364.2857 - received: ", higherActivity)
+        t.Error("12 - expect: 364.2857 - received: ", higherActivity)
     }
     if onsetHigherActivity.Format("02/01/2006 15:04:05") != "01/01/2015 05:00:00" {
-        t.Error("12 - expect: 01/01/2015 05:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
+        t.Error("13 - expect: 01/01/2015 05:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
+    }
+
+    higherActivity, onsetHigherActivity, err = chronobiology.HigherActivity(10, myDateTime, myData)
+
+    if err != nil {
+        t.Error("14 - error not nil")
+    }
+    if higherActivity != 305.5000 {
+        t.Error("15 - expect: 305.5000 - received: ", higherActivity)
+    }
+    if onsetHigherActivity.Format("02/01/2006 15:04:05") != "01/01/2015 01:00:00" {
+        t.Error("16 - expect: 01/01/2015 01:00:00 - received: ", onsetHigherActivity.Format("02/01/2006 15:04:05"))
     }
 }

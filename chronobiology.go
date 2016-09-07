@@ -16,12 +16,16 @@ func round(value float64) float64 {
 // Used to truncate a float64 value to a particular precision
 func roundPlus(value float64, places int) (float64) {
     shift := math.Pow(10, float64(places))
-    return Round(value * shift) / shift;
+    return round(value * shift) / shift;
 }
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
 
+    if hours == 0 {
+        err = errors.New("invalid hours")
+        return
+    }
     if len(dateTime) == 0 {
         err = errors.New("dateTime is empty")
         return
