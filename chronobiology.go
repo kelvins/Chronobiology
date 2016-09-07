@@ -45,6 +45,10 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
         finalDateTime := startDateTime.Add(time.Duration(hours) * time.Hour)
         tempDateTime := startDateTime
 
+        if finalDateTime.After( dateTime[len(dateTime)-1] ) {
+            break
+        }
+
         currentActivity := 0.0
         tempIndex := index
         count := 0
