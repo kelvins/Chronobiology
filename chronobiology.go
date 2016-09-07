@@ -1,0 +1,86 @@
+
+// Package that provides chronobiology functions to analyse time series data
+package chronobiology
+
+import (
+    "time"
+    "errors"
+    "math"
+)
+
+// Used to truncate a float64 value
+func round(value float64) float64 {
+    return math.Floor(value + .5)
+}
+
+// Used to truncate a float64 value to a particular precision
+func roundPlus(value float64, places int) (float64) {
+    shift := math.Pow(10, float64(places))
+    return Round(value * shift) / shift;
+}
+
+// Function that finds the highest activity average of the followed X hours (defined by parameter)
+func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
+
+    if len(dateTime) == 0 {
+        err = errors.New("dateTime is empty")
+        return
+    }
+    if len(data) == 0 {
+        err = errors.New("data is empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("dateTime and data has not the same size")
+        return
+    }
+
+    for index := 0; index < len(dateTime); index++ {
+
+        startDateTime := dateTime[index]
+        finalDateTime := startDateTime.Add(time.Duration(hours) * time.Hour)
+        tempDateTime := startDateTime
+
+        currentActivity := 0.0
+        tempIndex := index
+        count := 0
+
+        for tempDateTime.Before(finalDateTime) {
+            currentActivity += + data[tempIndex]
+            count += 1
+            tempIndex += + 1
+
+            if tempIndex >= len(dateTime) {
+                break
+            }
+
+            tempDateTime = dateTime[tempIndex]
+        }
+
+        currentActivity /= float64(count)
+
+        if currentActivity > higherActivity {
+            higherActivity = roundPlus(currentActivity, 4)
+            onsetHigherActivity = startDateTime
+        }
+    }
+
+    return
+}
+
+func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
+    lowerActivity = 123.32
+    onsetLowerActivity = time.Now()
+    return
+}
+
+// Function that finds the highest activity average of the followed 10 hours
+func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
+    higherActivity, onsetHigherActivity, err = HigherActivity(10, dateTime, data)
+    return
+}
+
+func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
+    lowerActivity, onsetLowerActivity, err = LowerActivity(5, dateTime, data)
+    return
+}
