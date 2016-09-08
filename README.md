@@ -39,7 +39,8 @@ Some functions that we pretend to provide with the package:
 
 ----------
 
-Please, feel free to contribute in any way
+Please, feel free to contribute in any way.
+
 If you want more information about this project please contact-me: kelvinpfw@hotmail.com
 
   [1]: https://golang.org
