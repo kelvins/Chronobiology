@@ -30,12 +30,12 @@ The **objective** of this project is to provide a easy way to access **chronobio
 
 Some functions that we pretend to provide with the package:
 
- - The followed hours of highest activity (e.g. M10)
- - The followed hours of lowest activity (e.g. L5)
- - Relative Amplitude (RA)
- - Intradaily Variability (IV)
- - Interdaily Stability (IS)
- - Chi Square Periodogram
+<i class="icon-check"></i> The followed hours of highest activity (e.g. M10)
+<i class="icon-check"></i> The followed hours of lowest activity (e.g. L5)
+<i class="icon-check-empty"></i> Relative Amplitude (RA)
+<i class="icon-check-empty"></i> Intradaily Variability (IV)
+<i class="icon-check-empty"></i> Interdaily Stability (IS)
+<i class="icon-check-empty"></i> Chi Square Periodogram
 
 ----------
 
