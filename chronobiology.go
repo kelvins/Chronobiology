@@ -23,23 +23,19 @@ func roundPlus(value float64, places int) (float64) {
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
 
     if hours == 0 {
-        err = errors.New("invalid hours")
+        err = errors.New("InvalidHours")
         return
     }
-    if len(dateTime) == 0 {
-        err = errors.New("dateTime is empty")
-        return
-    }
-    if len(data) == 0 {
-        err = errors.New("data is empty")
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
         return
     }
     if len(dateTime) != len(data) {
-        err = errors.New("dateTime and data has not the same size")
+        err = errors.New("DifferentSize")
         return
     }
     if dateTime[0].Add(time.Duration(hours) * time.Hour).After( dateTime[len(dateTime)-1] ) {
-        err = errors.New("time range lower than the hours passed as parameter")
+        err = errors.New("HoursHigher")
         return
     }
 
@@ -47,7 +43,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
 
         startDateTime := dateTime[index]
         finalDateTime := startDateTime.Add(time.Duration(hours) * time.Hour)
-        tempDateTime := startDateTime
+        tempDateTime  := startDateTime
 
         if finalDateTime.After( dateTime[len(dateTime)-1] ) {
             break
