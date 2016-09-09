@@ -67,7 +67,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
 
         currentActivity /= float64(count)
 
-        if currentActivity > higherActivity {
+        if currentActivity > higherActivity || higherActivity == 0.0 {
             higherActivity = roundPlus(currentActivity, 4)
             onsetHigherActivity = startDateTime
         }
@@ -77,9 +77,62 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
 }
 
 func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
-    lowerActivity = 123.32
-    onsetLowerActivity = time.Now()
-    return
+
+      if hours == 0 {
+          err = errors.New("InvalidHours")
+          return
+      }
+      if len(dateTime) == 0 || len(data) == 0 {
+          err = errors.New("Empty")
+          return
+      }
+      if len(dateTime) != len(data) {
+          err = errors.New("DifferentSize")
+          return
+      }
+      if dateTime[0].Add(time.Duration(hours) * time.Hour).After( dateTime[len(dateTime)-1] ) {
+          err = errors.New("HoursHigher")
+          return
+      }
+
+      firstTime := true
+
+      for index := 0; index < len(dateTime); index++ {
+
+          startDateTime := dateTime[index]
+          finalDateTime := startDateTime.Add(time.Duration(hours) * time.Hour)
+          tempDateTime  := startDateTime
+
+          if finalDateTime.After( dateTime[len(dateTime)-1] ) {
+              break
+          }
+
+          currentActivity := 0.0
+          tempIndex := index
+          count := 0
+
+          for tempDateTime.Before(finalDateTime) {
+              currentActivity += + data[tempIndex]
+              count += 1
+              tempIndex += + 1
+
+              if tempIndex >= len(dateTime) {
+                  break
+              }
+
+              tempDateTime = dateTime[tempIndex]
+          }
+
+          currentActivity /= float64(count)
+
+          if currentActivity < lowerActivity || firstTime == true {
+              lowerActivity = roundPlus(currentActivity, 4)
+              onsetLowerActivity = startDateTime
+              firstTime = false
+          }
+      }
+
+      return
 }
 
 // Function that finds the highest activity average of the followed 10 hours
