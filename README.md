@@ -5,7 +5,7 @@ This is an open source package developed to provide **chronobiology** functions 
 
 ----------
 
-<i class="icon-code"></i> What is GoLang?
+:shipit: What is GoLang?
 ---------------------------------
 **Go**, also known as **GoLang**, is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
@@ -15,7 +15,7 @@ The Go programming language was developed by **Google** and released in 2009. To
 
 ----------
 
-<i class="icon-clock"></i> What is chronobiology?
+:clock10: What is chronobiology?
 ---------------------------------
 
 Basically, **chronobiology** is a field of biology that studies the periodic phenomena in living organisms and their adaptation to solar and lunar rhythms. These cycles are known as **biological rhythms**.
@@ -24,18 +24,18 @@ Chronobiological studies include but are not limited to comparative anatomy, phy
 
 ----------
 
-<i class="icon-file"></i> The project
+:octocat: The project
 ---------------------------------
 The **objective** of this project is to provide a easy way to access **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
 Some functions that we pretend to provide with the package:
 
-<i class="icon-check"></i> The followed hours of highest activity (e.g. M10)
-<i class="icon-check"></i> The followed hours of lowest activity (e.g. L5)
-<i class="icon-check-empty"></i> Relative Amplitude (RA)
-<i class="icon-check-empty"></i> Intradaily Variability (IV)
-<i class="icon-check-empty"></i> Interdaily Stability (IS)
-<i class="icon-check-empty"></i> Chi Square Periodogram
+- [X] The followed hours of highest activity (e.g. M10)
+- [X] The followed hours of lowest activity (e.g. L5)
+- [ ] Relative Amplitude (RA)
+- [ ] Intradaily Variability (IV)
+- [ ] Interdaily Stability (IS)
+- [ ] Chi Square Periodogram
 
 ----------
 
