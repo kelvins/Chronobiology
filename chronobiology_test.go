@@ -67,8 +67,8 @@ func TestInvalidParametersHigherActivity(t *testing.T) {
 }
 
 func TestHigherActivity(t *testing.T) {
-    // Table tests 1
-    var tTests1 = []struct {
+    // Table tests
+    var tTests = []struct {
         hours int
         higherActivity float64
         onsetHigherActivity string
@@ -111,7 +111,7 @@ func TestHigherActivity(t *testing.T) {
     myData = append(myData, 050.0) // 12
 
     // Test with all values in the table
-    for _, pair := range tTests1 {
+    for _, pair := range tTests {
         higherActivity, onsetHigherActivity, err := chronobiology.HigherActivity(pair.hours, myDateTime, myData)
         if err != nil {
             t.Error(
@@ -196,8 +196,8 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
 }
 
 func TestLowerActivity(t *testing.T) {
-    // Table tests 1
-    var tTests1 = []struct {
+    // Table tests
+    var tTests = []struct {
         hours int
         lowerActivity float64
         onsetLowerActivity string
@@ -227,7 +227,7 @@ func TestLowerActivity(t *testing.T) {
     }
 
     // Test with all values in the table
-    for _, pair := range tTests1 {
+    for _, pair := range tTests {
         lowerActivity, onsetLowerActivity, err := chronobiology.LowerActivity(pair.hours, myDateTime, myData)
         if err != nil {
             t.Error(
@@ -247,6 +247,47 @@ func TestLowerActivity(t *testing.T) {
                 "For: ", pair.hours, " hours - ",
                 "expected: ", pair.onsetLowerActivity,
                 "received: ", onsetLowerActivity.Format("02/01/2006 15:04:05"),
+            )
+        }
+    }
+}
+
+func TestRelativeAmplitude(t *testing.T) {
+    // Expect an error
+    _, err := chronobiology.RelativeAmplitude(0.0, 0.0)
+    if err == nil {
+        t.Error(
+            "Error: ", err,
+        )
+    }
+
+    // Table tests
+    var tTests = []struct {
+        highestAverage float64
+        lowestAverage float64
+        relativeAmplitude float64
+    }{
+        { 180.0, 050.0, 0.5652 },
+        { 550.0, 125.0, 0.6296 },
+        { 101.0, 100.5, 0.0025 },
+        { 898.0, 315.0, 0.4806 },
+        { 211.5, 075.5, 0.4739 },
+        { 620.0, 020.0, 0.9375 },
+        { 780.0, 010.0, 0.9747 },
+    }
+
+    // Test with all values in the table
+    for _, pair := range tTests {
+        relativeAmplitude, err := chronobiology.RelativeAmplitude(pair.highestAverage, pair.lowestAverage)
+        if err != nil {
+            t.Error(
+                "Error: ", err,
+            )
+        }
+        if relativeAmplitude != pair.relativeAmplitude {
+            t.Error(
+                "Expected: ", pair.relativeAmplitude,
+                "Received: ", relativeAmplitude,
             )
         }
     }

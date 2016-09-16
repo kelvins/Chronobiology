@@ -76,6 +76,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
     return
 }
 
+// Function that finds the lowest activity average of the followed X hours (defined by parameter)
 func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
 
       if hours == 0 {
@@ -141,7 +142,20 @@ func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHig
     return
 }
 
+// Function that finds the lowest activity average of the following 5 hours
 func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
     lowerActivity, onsetLowerActivity, err = LowerActivity(5, dateTime, data)
+    return
+}
+
+// Function that calculates the relative amplitude based on the formula (M10-L5)/(M10+L5)
+func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float64, err error) {
+    if( highestAverage == 0.0 && lowestAverage == 0.0 ) {
+        err = errors.New("NullValues")
+        return
+    }
+
+    RA = (highestAverage-lowestAverage) / (highestAverage+lowestAverage)
+    RA = roundPlus(RA, 4)
     return
 }
