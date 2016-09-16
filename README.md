@@ -11,7 +11,7 @@ This is an open source package developed to provide **chronobiology** functions 
 
 The Go programming language was developed by **Google** and released in 2009. To know more about the **GoLang** please visit the official [web site][1].
 
-![](http://engineroom.teamwork.com/content/images/2014/Aug/a-3.png)
+![](https://www.gopheracademy.com/images/cowboy-color.png)
 
 ----------
 
