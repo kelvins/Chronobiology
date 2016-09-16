@@ -5,7 +5,7 @@ This is an open source package developed to provide **chronobiology** functions 
 
 ----------
 
-:shipit: What is GoLang?
+GoLang
 ---------------------------------
 **Go**, also known as **GoLang**, is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
@@ -15,7 +15,7 @@ The Go programming language was developed by **Google** and released in 2009. To
 
 ----------
 
-:clock10: What is chronobiology?
+Chronobiology
 ---------------------------------
 
 Basically, **chronobiology** is a field of biology that studies the periodic phenomena in living organisms and their adaptation to solar and lunar rhythms. These cycles are known as **biological rhythms**.
@@ -24,7 +24,7 @@ Chronobiological studies include but are not limited to comparative anatomy, phy
 
 ----------
 
-:octocat: The project
+The project
 ---------------------------------
 The **objective** of this project is to provide a easy way to access **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
@@ -32,7 +32,7 @@ Some functions that we pretend to provide with the package:
 
 - [X] The followed hours of highest activity (e.g. M10)
 - [X] The followed hours of lowest activity (e.g. L5)
-- [ ] Relative Amplitude (RA)
+- [X] Relative Amplitude (RA)
 - [ ] Intradaily Variability (IV)
 - [ ] Interdaily Stability (IS)
 - [ ] Chi Square Periodogram
