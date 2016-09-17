@@ -292,3 +292,98 @@ func TestRelativeAmplitude(t *testing.T) {
         }
     }
 }
+
+func TestFindEpoch(t *testing.T) {
+
+    utc, _ := time.LoadLocation("UTC")
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    var dateTimeEmpty []time.Time
+
+    var dateTime60sec []time.Time
+    for index := 0; index < 420; index++ {
+        tempDateTime  = tempDateTime.Add(1 * time.Minute)
+        dateTime60sec = append(dateTime60sec, tempDateTime)
+    }
+
+    var dateTime30sec []time.Time
+    for index := 0; index < 120; index++ {
+        tempDateTime  = tempDateTime.Add(30 * time.Second)
+        dateTime30sec = append(dateTime30sec, tempDateTime)
+    }
+
+    var dateTime5sec []time.Time
+    for index := 0; index < 10; index++ {
+        tempDateTime = tempDateTime.Add(5 * time.Second)
+        dateTime5sec = append(dateTime5sec, tempDateTime)
+    }
+
+    var dateTime180sec []time.Time
+    for index := 0; index < 820; index++ {
+        tempDateTime   = tempDateTime.Add(3 * time.Minute)
+        dateTime180sec = append(dateTime180sec, tempDateTime)
+    }
+
+    var dateTime120sec []time.Time
+    for index := 0; index < 100; index++ {
+        tempDateTime   = tempDateTime.Add(2 * time.Minute)
+        dateTime120sec = append(dateTime120sec, tempDateTime)
+    }
+    for index := 0; index < 30; index++ {
+        tempDateTime   = tempDateTime.Add(1 * time.Minute)
+        dateTime120sec = append(dateTime120sec, tempDateTime)
+    }
+    for index := 0; index < 15; index++ {
+        tempDateTime   = tempDateTime.Add(30 * time.Second)
+        dateTime120sec = append(dateTime120sec, tempDateTime)
+    }
+    for index := 0; index < 100; index++ {
+        tempDateTime   = tempDateTime.Add(2 * time.Minute)
+        dateTime120sec = append(dateTime120sec, tempDateTime)
+    }
+
+    var dateTime360sec []time.Time
+    for index := 0; index < 50; index++ {
+        tempDateTime   = tempDateTime.Add(6 * time.Minute)
+        dateTime360sec = append(dateTime360sec, tempDateTime)
+    }
+    for index := 0; index < 49; index++ {
+        tempDateTime   = tempDateTime.Add(4 * time.Minute)
+        dateTime360sec = append(dateTime360sec, tempDateTime)
+    }
+    for index := 0; index < 49; index++ {
+        tempDateTime   = tempDateTime.Add(2 * time.Minute)
+        dateTime360sec = append(dateTime360sec, tempDateTime)
+    }
+
+    var dateTimeInvalid []time.Time
+    for index := 0; index < 250; index++ {
+        dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    }
+
+    // Table tests
+    var tTests = []struct {
+        dateTime []time.Time
+        epoch int
+    }{
+        { dateTimeEmpty,    0 },
+        { dateTime60sec,   60 },
+        { dateTime30sec,   30 },
+        { dateTime5sec,     5 },
+        { dateTime180sec, 180 },
+        { dateTime120sec, 120 },
+        { dateTime360sec, 360 },
+        { dateTimeInvalid,  0 },
+    }
+
+    // Test with all values in the table
+    for _, pair := range tTests {
+        epoch := chronobiology.FindEpoch(pair.dateTime)
+        if epoch != pair.epoch {
+            t.Error(
+                "Expected: ", pair.epoch,
+                "Received: ", epoch,
+            )
+        }
+    }
+}

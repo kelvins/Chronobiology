@@ -8,6 +8,8 @@ import (
     "math"
 )
 
+/* BEGIN INTERNAL FUNCTIONS */
+
 // Used to truncate a float64 value
 func round(value float64) float64 {
     return math.Floor(value + .5)
@@ -18,6 +20,77 @@ func roundPlus(value float64, places int) (float64) {
     shift := math.Pow(10, float64(places))
     return round(value * shift) / shift;
 }
+
+// Calculates the average of a float64 slice
+func average(data []float64) (float64) {
+    var average float64
+    if len(data) == 0 {
+      return average
+    }
+    for index := 0; index < len(data); index++ {
+        average += data[index]
+    }
+    return average / float64(len(data))
+}
+
+// Searches for a value in a slice and returns its position
+func findPosition(value int, data []int) (int) {
+    if len(data) == 0 {
+        return -1
+    }
+    for index := 0; index < len(data); index++ {
+        if data[index] == value {
+            return index
+        }
+    }
+    return -1
+}
+
+// Finds the max value in a slice and returns its position
+func findMaxPosition(data []int) (int) {
+    if len(data) == 0 {
+        return -1
+    }
+    var position int
+    max := data[0]
+
+    for index := 0; index < len(data); index++ {
+        if data[index] > max {
+            max = data[index]
+            position = index
+        }
+    }
+    return position
+}
+
+// Calculates the difference between two time.Time in seconds
+func secondsTo(date1 time.Time, date2 time.Time) (int) {
+    if date1.Equal(date2) || date1.After(date2) {
+        return 0
+    }
+
+    year := date2.Year() - date1.Year()
+    month := date2.Month() - date1.Month()
+
+    // Does not calculate the seconds if is higher than 1 month
+    if year > 0 || month > 0 {
+        return 0
+    }
+
+    day := date2.Day() - date1.Day()
+    hour := date2.Hour() - date1.Hour()
+    minute := date2.Minute() - date1.Minute()
+    second := date2.Second() - date1.Second()
+
+    seconds := day*24*60*60
+    seconds += hour*60*60
+    seconds += minute*60
+    seconds += second
+
+    return seconds
+}
+
+/* END INTERNAL FUNCTIONS */
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
@@ -157,5 +230,72 @@ func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float6
 
     RA = (highestAverage-lowestAverage) / (highestAverage+lowestAverage)
     RA = roundPlus(RA, 4)
+    return
+}
+
+// Function that calculates the intradaily variability
+func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error) {
+
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+
+    // The zero position is allocated to store the average value of the iv vector
+    iv = append(iv, 0.0)
+
+    average := average(data)
+
+    // Calculates the numerator
+    var numerator float64
+    for index := 1; index < len(data); index++ {
+        tempValue := data[index] - data[index-1]
+        numerator += math.Pow(tempValue, 2)
+    }
+    numerator = numerator * float64(len(data))
+
+    // Calculates the denominator
+    var denominator float64
+    for index := 0; index < len(data); index++ {
+        tempValue := average - data[index]
+        denominator += math.Pow(tempValue, 2)
+    }
+    denominator = denominator * (float64(len(data)) - 1.0)
+
+    result := numerator / denominator
+    iv = append(iv, result)
+    return
+}
+
+// Function that finds the epoch of a time series (seconds)
+func FindEpoch(dateTime []time.Time) (epoch int) {
+
+    if len(dateTime) == 0 {
+        return
+    }
+
+    var count []int
+    var epochs []int
+
+    for index := 1; index < len(dateTime); index++ {
+
+        seconds := secondsTo(dateTime[index-1], dateTime[index])
+
+        position := findPosition(seconds, epochs)
+        if position > -1 {
+            count[position] += 1
+        }else {
+            epochs = append(epochs, seconds)
+            count  = append(count, 1)
+        }
+    }
+
+    maxPos := findMaxPosition(count)
+    epoch = epochs[maxPos]
+    
     return
 }
