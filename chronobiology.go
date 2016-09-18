@@ -251,26 +251,46 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
     // The zero position is allocated to store the average value of the iv vector
     iv = append(iv, 0.0)
 
-    average := average(data)
+    for mainIndex := 1; mainIndex <= 60; mainIndex++ {
 
-    // Calculates the numerator
-    var numerator float64
-    for index := 1; index < len(data); index++ {
-        tempValue := data[index] - data[index-1]
-        numerator += math.Pow(tempValue, 2)
+        dateTime, data, err = ConvertDataBasedOnEpoch(dateTime, data, mainIndex)
+
+        if err != nil {
+            err = errors.New("ConvertDataBasedOnEpoch error")
+            iv = nil
+            return
+        }
+
+        average := average(data)
+
+        // Calculates the numerator
+        var numerator float64
+        for index := 1; index < len(data); index++ {
+            tempValue := data[index] - data[index-1]
+            numerator += math.Pow(tempValue, 2)
+        }
+        numerator = numerator * float64(len(data))
+
+        // Calculates the denominator
+        var denominator float64
+        for index := 0; index < len(data); index++ {
+            tempValue := average - data[index]
+            denominator += math.Pow(tempValue, 2)
+        }
+        denominator = denominator * (float64(len(data)) - 1.0)
+
+        result := numerator / denominator
+        iv = append(iv, result)
     }
-    numerator = numerator * float64(len(data))
 
-    // Calculates the denominator
-    var denominator float64
-    for index := 0; index < len(data); index++ {
-        tempValue := average - data[index]
-        denominator += math.Pow(tempValue, 2)
+    // Calculates the IV average
+    var average float64
+    for index := 1; index < len(iv); index++ {
+        average += iv[index]
     }
-    denominator = denominator * (float64(len(data)) - 1.0)
+    average = average / float64(len(iv)-1)
+    iv[0] = average
 
-    result := numerator / denominator
-    iv = append(iv, result)
     return
 }
 
