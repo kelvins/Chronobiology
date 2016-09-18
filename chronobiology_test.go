@@ -8,6 +8,15 @@ import (
     "github.com/kelvins/chronobiology"
 )
 
+var EPSILON float64 = 0.00000001
+
+func floatEquals(a, b float64) bool {
+  	if ((a - b) < EPSILON && (b - a) < EPSILON) {
+  		  return true
+  	}
+  	return false
+}
+
 func TestInvalidParametersHigherActivity(t *testing.T) {
     // Get UTC
     utc, _ := time.LoadLocation("UTC")
@@ -120,7 +129,7 @@ func TestHigherActivity(t *testing.T) {
                 "expect: error not nil",
             )
         }
-        if higherActivity != pair.higherActivity {
+        if !floatEquals(higherActivity, pair.higherActivity) {
             t.Error(
                 "For: ", pair.hours, " hours - ",
                 "expected: ", pair.higherActivity,
@@ -236,7 +245,7 @@ func TestLowerActivity(t *testing.T) {
                 "expect: error not nil",
             )
         }
-        if lowerActivity != pair.lowerActivity {
+        if !floatEquals(lowerActivity, pair.lowerActivity) {
             t.Error(
                 "For: ", pair.hours, " hours - ",
                 "expected: ", pair.lowerActivity,
@@ -285,7 +294,7 @@ func TestRelativeAmplitude(t *testing.T) {
                 "Error: ", err,
             )
         }
-        if relativeAmplitude != pair.relativeAmplitude {
+        if !floatEquals(relativeAmplitude, pair.relativeAmplitude) {
             t.Error(
                 "Expected: ", pair.relativeAmplitude,
                 "Received: ", relativeAmplitude,
@@ -561,5 +570,64 @@ func TestIntradailyVariability(t *testing.T) {
 
     if err == nil {
         t.Error("Expected error : LessThan2Hours")
+    }
+
+    var dateTime60secs []time.Time
+    var data60secs []float64
+
+    tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+    for index := 0; index < 240; index++ {
+        dateTime60secs = append(dateTime60secs, tempDateTime)
+
+        var value float64
+        if index < 50 {
+            value = 100.0
+        } else if index < 100 {
+            value = 150.0
+        } else if index < 150 {
+            value = 225.0
+        } else if index < 200 {
+            value = 250.0
+        } else {
+            value = 300.0
+        }
+
+        data60secs     = append(data60secs, value)
+        tempDateTime   = tempDateTime.Add(60 * time.Second)
+    }
+
+    dateTime30secs, data30secs, err := chronobiology.ConvertDataBasedOnEpoch(dateTime60secs, data60secs, 30)
+
+    // Table tests
+    var tTests = []struct {
+        dateTime []time.Time
+        data []float64
+        iv1 float64
+        iv2 float64
+    }{
+        { dateTime60secs, data60secs, 0.0096, 0.0192 },
+        { dateTime30secs, data30secs, 0.0096, 0.0192 },
+    }
+
+    // Test with all values in the table
+    for _, table := range tTests {
+        iv, err := chronobiology.IntradailyVariability(table.dateTime, table.data)
+
+        if err != nil {
+            t.Error("Expected error = nil.")
+        } else {
+            if !floatEquals(iv[1], table.iv1) {
+                t.Error(
+                    "Expected: ", table.iv1,
+                    "Received: ", iv[1],
+                )
+            }
+            if !floatEquals(iv[2], table.iv2) {
+                t.Error(
+                    "Expected: ", table.iv2,
+                    "Received: ", iv[2],
+                )
+            }
+        }
     }
 }

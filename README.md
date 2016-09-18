@@ -33,9 +33,11 @@ Some functions that we pretend to provide with the package:
 - [X] The followed hours of highest activity (e.g. M10)
 - [X] The followed hours of lowest activity (e.g. L5)
 - [X] Relative Amplitude (RA)
-- [ ] Intradaily Variability (IV)
+- [X] Intradaily Variability (IV)
 - [ ] Interdaily Stability (IS)
 - [ ] Chi Square Periodogram
+
+**Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
 
 ----------
 

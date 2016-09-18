@@ -90,6 +90,15 @@ func secondsTo(date1 time.Time, date2 time.Time) (int) {
     return seconds
 }
 
+var EPSILON float64 = 0.00000001
+
+func floatEquals(a, b float64) bool {
+  	if ((a - b) < EPSILON && (b - a) < EPSILON) {
+  		  return true
+  	}
+  	return false
+}
+
 /* END INTERNAL FUNCTIONS */
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
@@ -140,7 +149,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
 
         currentActivity /= float64(count)
 
-        if currentActivity > higherActivity || higherActivity == 0.0 {
+        if currentActivity > higherActivity || floatEquals(higherActivity, 0.0) {
             higherActivity = roundPlus(currentActivity, 4)
             onsetHigherActivity = startDateTime
         }
@@ -253,34 +262,40 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
 
     for mainIndex := 1; mainIndex <= 60; mainIndex++ {
 
-        dateTime, data, err = ConvertDataBasedOnEpoch(dateTime, data, mainIndex)
+        _, tempData, err := ConvertDataBasedOnEpoch(dateTime, data, (mainIndex*60))
 
         if err != nil {
             err = errors.New("ConvertDataBasedOnEpoch error")
             iv = nil
-            return
+            return iv, err
         }
 
-        average := average(data)
+        if len(tempData) > 0 {
 
-        // Calculates the numerator
-        var numerator float64
-        for index := 1; index < len(data); index++ {
-            tempValue := data[index] - data[index-1]
-            numerator += math.Pow(tempValue, 2)
+            average := average(tempData)
+
+            // Calculates the numerator
+            var numerator float64
+            for index := 1; index < len(tempData); index++ {
+                tempValue := tempData[index] - tempData[index-1]
+                numerator += math.Pow(tempValue, 2)
+            }
+            numerator = numerator * float64(len(tempData))
+
+            // Calculates the denominator
+            var denominator float64
+            for index := 0; index < len(tempData); index++ {
+                tempValue := average - tempData[index]
+                denominator += math.Pow(tempValue, 2)
+            }
+            denominator = denominator * (float64(len(tempData)) - 1.0)
+
+            result := roundPlus((numerator/denominator), 4)
+            iv = append(iv, result)
+
+        } else {
+            iv = append(iv, 0.0)
         }
-        numerator = numerator * float64(len(data))
-
-        // Calculates the denominator
-        var denominator float64
-        for index := 0; index < len(data); index++ {
-            tempValue := average - data[index]
-            denominator += math.Pow(tempValue, 2)
-        }
-        denominator = denominator * (float64(len(data)) - 1.0)
-
-        result := numerator / denominator
-        iv = append(iv, result)
     }
 
     // Calculates the IV average
@@ -339,7 +354,7 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
     startDateTime := dateTime[0]
 
     if newEpoch == currentEpoch {
-        return
+        return dateTime, data, nil
     }
 
     // Increase
