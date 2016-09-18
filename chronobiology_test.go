@@ -4,6 +4,7 @@ package chronobiology_test
 import (
     "time"
     "testing"
+    "reflect"
     "github.com/kelvins/chronobiology"
 )
 
@@ -385,5 +386,180 @@ func TestFindEpoch(t *testing.T) {
                 "Received: ", epoch,
             )
         }
+    }
+}
+
+func TestConvertDataBasedOnEpoch(t *testing.T) {
+
+    utc, _ := time.LoadLocation("UTC")
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    var dateTimeEmpty []time.Time
+    var dataEmpty []float64
+
+    _, _, err := chronobiology.ConvertDataBasedOnEpoch(dateTimeEmpty, dataEmpty, 120)
+
+    if err == nil {
+        t.Error("Expect error Empty")
+    }
+
+    var dateTimeInvalid []time.Time
+    var dataInvalid []float64
+
+    tempDateTime    = tempDateTime.Add(1 * time.Minute)
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    tempDateTime    = tempDateTime.Add(1 * time.Minute)
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dataInvalid     = append(dataInvalid, 123.5)
+
+    _, _, err = chronobiology.ConvertDataBasedOnEpoch(dateTimeInvalid, dataInvalid, 120)
+
+    if err == nil {
+        t.Error("Expect error DifferentSize")
+    }
+
+    var dateTime60secs []time.Time
+    var data60secs []float64
+
+    tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+    for index := 0; index < 40; index++ {
+        dateTime60secs = append(dateTime60secs, tempDateTime)
+        data60secs     = append(data60secs, 250.0)
+        tempDateTime   = tempDateTime.Add(60 * time.Second)
+    }
+
+    var newDateTime30secs []time.Time
+    var newData30secs []float64
+
+    tempDateTime = dateTime60secs[0]
+    for index := 0; index < 80; index++ {
+        newDateTime30secs = append(newDateTime30secs, tempDateTime)
+        newData30secs     = append(newData30secs, 250.0)
+        tempDateTime      = tempDateTime.Add(30 * time.Second)
+    }
+
+    var newDateTime120secs []time.Time
+    var newData120secs []float64
+
+    tempDateTime = dateTime60secs[0]
+    for index := 0; index < 20; index++ {
+        newDateTime120secs = append(newDateTime120secs, tempDateTime)
+        newData120secs     = append(newData120secs, 250.0)
+        tempDateTime       = tempDateTime.Add(120 * time.Second)
+    }
+
+    var newDateTime90secs []time.Time
+    var newData90secs []float64
+
+    tempDateTime = dateTime60secs[0]
+    for index := 0; index < 20; index++ {
+        newDateTime90secs = append(newDateTime90secs, tempDateTime)
+        newData90secs     = append(newData90secs, 333.3333)
+        tempDateTime       = tempDateTime.Add(90 * time.Second)
+    }
+
+    var newDateTime15secs []time.Time
+    var newData15secs []float64
+
+    tempDateTime = dateTime60secs[0]
+    for index := 0; index < 160; index++ {
+        newDateTime15secs = append(newDateTime15secs, tempDateTime)
+        newData15secs     = append(newData15secs, 250.0)
+        tempDateTime      = tempDateTime.Add(15 * time.Second)
+    }
+
+    var newDateTime240secs []time.Time
+    var newData240secs []float64
+
+    tempDateTime = dateTime60secs[0]
+    for index := 0; index < 10; index++ {
+        newDateTime240secs = append(newDateTime240secs, tempDateTime)
+        newData240secs     = append(newData240secs, 250.0)
+        tempDateTime       = tempDateTime.Add(240 * time.Second)
+    }
+
+    // Table tests
+    var tTests = []struct {
+        dateTime []time.Time
+        data []float64
+        newEpoch int
+        newDateTime []time.Time
+        newData []float64
+    }{
+        { dateTime60secs, data60secs,  30,  newDateTime30secs,  newData30secs },
+        { dateTime60secs, data60secs, 120, newDateTime120secs, newData120secs },
+        { dateTime60secs, data60secs,  90,  newDateTime90secs,  newData90secs },
+        { dateTime60secs, data60secs,  15,  newDateTime15secs,  newData15secs },
+        { dateTime60secs, data60secs, 240, newDateTime240secs, newData240secs },
+    }
+
+    // Test with all values in the table
+    for _, table := range tTests {
+        newDateTime, newData, err := chronobiology.ConvertDataBasedOnEpoch(table.dateTime, table.data, table.newEpoch)
+
+        if err != nil {
+            t.Error("Expected error = nil.")
+        }
+        if !reflect.DeepEqual(newDateTime, table.newDateTime) {
+            t.Error("Different dateTime slices. NewEpoch : ", table.newEpoch,)
+        }
+        if !reflect.DeepEqual(newData, table.newData) {
+            t.Error("Different data slices. NewEpoch : ", table.newEpoch,)
+        }
+    }
+}
+
+func TestIntradailyVariability(t *testing.T) {
+
+    /* TEST WITH INVALID PARAMETERS */
+
+    utc, _ := time.LoadLocation("UTC")
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    var dateTimeEmpty []time.Time
+    var dataEmpty []float64
+
+    _, err := chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+
+    if err == nil {
+        t.Error("Expected error : Empty")
+    }
+
+    var dateTimeDifferentSize []time.Time
+    var dataDifferentSize []float64
+
+    dateTimeDifferentSize = append(dateTimeDifferentSize, tempDateTime)
+    tempDateTime          = tempDateTime.Add(60 * time.Second)
+    dateTimeDifferentSize = append(dateTimeDifferentSize, tempDateTime)
+    tempDateTime          = tempDateTime.Add(60 * time.Second)
+
+    dataDifferentSize = append(dataDifferentSize, 250.0)
+    dataDifferentSize = append(dataDifferentSize, 250.0)
+    dataDifferentSize = append(dataDifferentSize, 250.0)
+
+    _, err = chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+
+    if err == nil {
+        t.Error("Expected error : DifferentSize")
+    }
+
+    var dateTimeLess2Hours []time.Time
+    var dataLess2Hours []float64
+
+    dateTimeLess2Hours = append(dateTimeLess2Hours, tempDateTime)
+    tempDateTime       = tempDateTime.Add(60 * time.Second)
+    dateTimeLess2Hours = append(dateTimeLess2Hours, tempDateTime)
+    tempDateTime       = tempDateTime.Add(60 * time.Second)
+    dateTimeLess2Hours = append(dateTimeLess2Hours, tempDateTime)
+    tempDateTime       = tempDateTime.Add(60 * time.Second)
+
+    dataLess2Hours = append(dataLess2Hours, 250.0)
+    dataLess2Hours = append(dataLess2Hours, 250.0)
+    dataLess2Hours = append(dataLess2Hours, 250.0)
+
+    _, err = chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+
+    if err == nil {
+        t.Error("Expected error : LessThan2Hours")
     }
 }

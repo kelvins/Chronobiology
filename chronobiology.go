@@ -352,6 +352,7 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
             if tempEpoch >= newEpoch {
                 newDateTime = append(newDateTime, startDateTime)
                 tempData    = tempData / (float64(newEpoch)/float64(currentEpoch))
+                tempData    = roundPlus(tempData, 4)
                 newData     = append(newData, tempData)
                 tempEpoch = 0
                 tempData  = 0.0
