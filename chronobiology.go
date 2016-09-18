@@ -244,6 +244,9 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
         err = errors.New("DifferentSize")
         return
     }
+    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (2*60*60) {
+        err = errors.New("LessThan2Hours")
+    }
 
     // The zero position is allocated to store the average value of the iv vector
     iv = append(iv, 0.0)
@@ -296,6 +299,55 @@ func FindEpoch(dateTime []time.Time) (epoch int) {
 
     maxPos := findMaxPosition(count)
     epoch = epochs[maxPos]
-    
+
+    return
+}
+
+// Convert the data and dateTime slices to the new epoch passed by parameter
+func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error) {
+
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+
+    currentEpoch := FindEpoch(dateTime)
+    startDateTime := dateTime[0]
+
+    if newEpoch == currentEpoch {
+        return
+    }
+
+    // Increase
+    if newEpoch > currentEpoch {
+        var tempEpoch int
+        var tempData float64
+        for index1 := 0; index1 < len(dateTime); index1++ {
+            tempEpoch += currentEpoch
+            tempData  += data[index1]
+            if tempEpoch >= newEpoch {
+                newDateTime = append(newDateTime, startDateTime)
+                tempData    = tempData / (float64(newEpoch)/float64(currentEpoch))
+                newData     = append(newData, tempData)
+                tempEpoch = 0
+                tempData  = 0.0
+                startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
+            }
+        }
+    } else {
+        // Decrease
+        for index1 := 0; index1 < len(dateTime); index1++ {
+            for index2 := 0; index2 < currentEpoch/newEpoch; index2++ {
+                newDateTime = append(newDateTime, startDateTime)
+                newData     = append(newData, data[index1])
+                startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
+            }
+        }
+    }
+
     return
 }
