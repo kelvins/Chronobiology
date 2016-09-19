@@ -65,38 +65,70 @@ func findMaxPosition(data []int) (int) {
 
 // Calculates the difference between two time.Time in seconds
 func secondsTo(date1 time.Time, date2 time.Time) (int) {
+
     if date1.Equal(date2) || date1.After(date2) {
         return 0
     }
 
-    year := date2.Year() - date1.Year()
-    month := date2.Month() - date1.Month()
+    time1, _ := time.Parse(time.RFC850, date1.Format(time.RFC850))
+    time2, _ := time.Parse(time.RFC850, date2.Format(time.RFC850))
 
-    // Does not calculate the seconds if is higher than 1 month
-    if year > 0 || month > 0 {
-        return 0
-    }
+    seconds1 := time1.Unix()
+    seconds2 := time2.Unix()
+    seconds  := seconds2-seconds1
 
-    day := date2.Day() - date1.Day()
-    hour := date2.Hour() - date1.Hour()
-    minute := date2.Minute() - date1.Minute()
-    second := date2.Second() - date1.Second()
-
-    seconds := day*24*60*60
-    seconds += hour*60*60
-    seconds += minute*60
-    seconds += second
-
-    return seconds
+    return int(seconds)
 }
 
 var EPSILON float64 = 0.00000001
 
 func floatEquals(a, b float64) bool {
-  	if ((a - b) < EPSILON && (b - a) < EPSILON) {
-  		  return true
-  	}
-  	return false
+    if ((a - b) < EPSILON && (b - a) < EPSILON) {
+        return true
+    }
+    return false
+}
+
+// Function used to decrease the epoch
+func decrease(dateTime []time.Time, data []float64, currentEpoch int, newEpoch int) (newDateTime []time.Time, newData[]float64) {
+
+    startDateTime := dateTime[0]
+    startDateTime = startDateTime.Add(-(time.Duration(currentEpoch) * time.Second))
+
+    for index1 := 0; index1 < len(dateTime); index1++ {
+        for index2 := 0; index2 < currentEpoch/newEpoch; index2++ {
+            startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
+            newDateTime = append(newDateTime, startDateTime)
+            newData     = append(newData, data[index1])
+        }
+    }
+
+    return
+}
+
+// Function used to increase the epoch
+func increase(dateTime []time.Time, data []float64, currentEpoch int, newEpoch int) (newDateTime []time.Time, newData[]float64) {
+
+    var tempEpoch int
+    var tempData float64
+    startDateTime := dateTime[0]
+    startDateTime = startDateTime.Add(-(time.Duration(currentEpoch) * time.Second))
+
+    for index1 := 0; index1 < len(dateTime); index1++ {
+        tempEpoch += currentEpoch
+        tempData  += data[index1]
+        if tempEpoch >= newEpoch {
+            startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
+            newDateTime = append(newDateTime, startDateTime)
+            tempData    = tempData / (float64(newEpoch)/float64(currentEpoch))
+            tempData    = roundPlus(tempData, 4)
+            newData     = append(newData, tempData)
+            tempEpoch = 0
+            tempData  = 0.0
+        }
+    }
+
+    return
 }
 
 /* END INTERNAL FUNCTIONS */
@@ -349,39 +381,35 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
         err = errors.New("DifferentSize")
         return
     }
+    if newEpoch == 0 {
+        err = errors.New("InvalidEpoch")
+        return
+    }
 
-    currentEpoch := FindEpoch(dateTime)
-    startDateTime := dateTime[0]
+    currentEpoch  := FindEpoch(dateTime)
 
+    if currentEpoch == 0 {
+        err = errors.New("InvalidEpoch")
+        return
+    }
     if newEpoch == currentEpoch {
         return dateTime, data, nil
     }
 
-    // Increase
-    if newEpoch > currentEpoch {
-        var tempEpoch int
-        var tempData float64
-        for index1 := 0; index1 < len(dateTime); index1++ {
-            tempEpoch += currentEpoch
-            tempData  += data[index1]
-            if tempEpoch >= newEpoch {
-                newDateTime = append(newDateTime, startDateTime)
-                tempData    = tempData / (float64(newEpoch)/float64(currentEpoch))
-                tempData    = roundPlus(tempData, 4)
-                newData     = append(newData, tempData)
-                tempEpoch = 0
-                tempData  = 0.0
-                startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
-            }
-        }
+    if (newEpoch > currentEpoch && newEpoch % currentEpoch != 0) ||
+       (currentEpoch > newEpoch && currentEpoch % newEpoch != 0)  {
+
+        // Decrease to 1 second
+        dateTime, data = decrease(dateTime, data, currentEpoch, 1);
+
+        // Increase to the newEpoch
+        newDateTime, newData = increase(dateTime, data, 1, newEpoch);
+
     } else {
-        // Decrease
-        for index1 := 0; index1 < len(dateTime); index1++ {
-            for index2 := 0; index2 < currentEpoch/newEpoch; index2++ {
-                newDateTime = append(newDateTime, startDateTime)
-                newData     = append(newData, data[index1])
-                startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
-            }
+        if newEpoch > currentEpoch {
+            newDateTime, newData = increase(dateTime, data, currentEpoch, newEpoch);
+        } else {
+            newDateTime, newData = decrease(dateTime, data, currentEpoch, newEpoch);
         }
     }
 

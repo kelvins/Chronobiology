@@ -441,50 +441,55 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
     var newData30secs []float64
 
     tempDateTime = dateTime60secs[0]
+    tempDateTime = tempDateTime.Add(-(60 * time.Second))
     for index := 0; index < 80; index++ {
+        tempDateTime      = tempDateTime.Add(30 * time.Second)
         newDateTime30secs = append(newDateTime30secs, tempDateTime)
         newData30secs     = append(newData30secs, 250.0)
-        tempDateTime      = tempDateTime.Add(30 * time.Second)
     }
 
     var newDateTime120secs []time.Time
     var newData120secs []float64
 
     tempDateTime = dateTime60secs[0]
+    tempDateTime = tempDateTime.Add(-(60 * time.Second))
     for index := 0; index < 20; index++ {
+        tempDateTime       = tempDateTime.Add(120 * time.Second)
         newDateTime120secs = append(newDateTime120secs, tempDateTime)
         newData120secs     = append(newData120secs, 250.0)
-        tempDateTime       = tempDateTime.Add(120 * time.Second)
     }
 
     var newDateTime90secs []time.Time
     var newData90secs []float64
 
     tempDateTime = dateTime60secs[0]
-    for index := 0; index < 20; index++ {
+    tempDateTime = tempDateTime.Add(-(60 * time.Second))
+    for index := 0; index < 26; index++ {
+        tempDateTime      = tempDateTime.Add(90 * time.Second)
         newDateTime90secs = append(newDateTime90secs, tempDateTime)
-        newData90secs     = append(newData90secs, 333.3333)
-        tempDateTime       = tempDateTime.Add(90 * time.Second)
+        newData90secs     = append(newData90secs, 250.0)
     }
 
     var newDateTime15secs []time.Time
     var newData15secs []float64
 
     tempDateTime = dateTime60secs[0]
+    tempDateTime = tempDateTime.Add(-(60 * time.Second))
     for index := 0; index < 160; index++ {
+        tempDateTime      = tempDateTime.Add(15 * time.Second)
         newDateTime15secs = append(newDateTime15secs, tempDateTime)
         newData15secs     = append(newData15secs, 250.0)
-        tempDateTime      = tempDateTime.Add(15 * time.Second)
     }
 
     var newDateTime240secs []time.Time
     var newData240secs []float64
 
     tempDateTime = dateTime60secs[0]
+    tempDateTime = tempDateTime.Add(-(60 * time.Second))
     for index := 0; index < 10; index++ {
+        tempDateTime       = tempDateTime.Add(240 * time.Second)
         newDateTime240secs = append(newDateTime240secs, tempDateTime)
         newData240secs     = append(newData240secs, 250.0)
-        tempDateTime       = tempDateTime.Add(240 * time.Second)
     }
 
     // Table tests
