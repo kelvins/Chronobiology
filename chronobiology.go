@@ -70,13 +70,14 @@ func secondsTo(date1 time.Time, date2 time.Time) (int) {
         return 0
     }
 
-    time1, _ := time.Parse(time.RFC850, date1.Format(time.RFC850))
-    time2, _ := time.Parse(time.RFC850, date2.Format(time.RFC850))
+    // Get the number of seconds elapsed since 01/01/1970
+    seconds1 := date1.Unix()
+    seconds2 := date2.Unix()
 
-    seconds1 := time1.Unix()
-    seconds2 := time2.Unix()
-    seconds  := seconds2-seconds1
+    // Calculate the difference in seconds
+    seconds := seconds2-seconds1
 
+    // Return the seconds as int instead of int64
     return int(seconds)
 }
 
@@ -93,9 +94,11 @@ func floatEquals(a, b float64) bool {
 func decrease(dateTime []time.Time, data []float64, currentEpoch int, newEpoch int) (newDateTime []time.Time, newData[]float64) {
 
     startDateTime := dateTime[0]
+    // The start time must be the same start time of the current recorded data
     startDateTime = startDateTime.Add(-(time.Duration(currentEpoch) * time.Second))
 
     for index1 := 0; index1 < len(dateTime); index1++ {
+        // To each data "row", split it to X new "rows"
         for index2 := 0; index2 < currentEpoch/newEpoch; index2++ {
             startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
             newDateTime = append(newDateTime, startDateTime)
@@ -111,18 +114,23 @@ func increase(dateTime []time.Time, data []float64, currentEpoch int, newEpoch i
 
     var tempEpoch int
     var tempData float64
+
     startDateTime := dateTime[0]
+    // The start time must be the same start time of the current recorded data
     startDateTime = startDateTime.Add(-(time.Duration(currentEpoch) * time.Second))
 
     for index1 := 0; index1 < len(dateTime); index1++ {
         tempEpoch += currentEpoch
         tempData  += data[index1]
+
         if tempEpoch >= newEpoch {
             startDateTime = startDateTime.Add(time.Duration(newEpoch) * time.Second)
             newDateTime = append(newDateTime, startDateTime)
+
             tempData    = tempData / (float64(newEpoch)/float64(currentEpoch))
             tempData    = roundPlus(tempData, 4)
             newData     = append(newData, tempData)
+
             tempEpoch = 0
             tempData  = 0.0
         }
@@ -136,6 +144,7 @@ func increase(dateTime []time.Time, data []float64, currentEpoch int, newEpoch i
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
 
+    // Check the parameters
     if hours == 0 {
         err = errors.New("InvalidHours")
         return
@@ -193,6 +202,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
 // Function that finds the lowest activity average of the followed X hours (defined by parameter)
 func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
 
+      // Check the parameters
       if hours == 0 {
           err = errors.New("InvalidHours")
           return
@@ -373,6 +383,7 @@ func FindEpoch(dateTime []time.Time) (epoch int) {
 // Convert the data and dateTime slices to the new epoch passed by parameter
 func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error) {
 
+    // Check the parameters
     if len(dateTime) == 0 || len(data) == 0 {
         err = errors.New("Empty")
         return
@@ -388,6 +399,7 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
 
     currentEpoch  := FindEpoch(dateTime)
 
+    // Could not find the epoch
     if currentEpoch == 0 {
         err = errors.New("InvalidEpoch")
         return
@@ -396,6 +408,8 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
         return dateTime, data, nil
     }
 
+    // If the new Epoch is not divisible or multipliable by the currentEpoch
+    // It needs to be decreased to 1 second to then increase to the newEpoch
     if (newEpoch > currentEpoch && newEpoch % currentEpoch != 0) ||
        (currentEpoch > newEpoch && currentEpoch % newEpoch != 0)  {
 
@@ -406,8 +420,11 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
         newDateTime, newData = increase(dateTime, data, 1, newEpoch);
 
     } else {
+        // Increase
         if newEpoch > currentEpoch {
             newDateTime, newData = increase(dateTime, data, currentEpoch, newEpoch);
+
+        // Decrease
         } else {
             newDateTime, newData = decrease(dateTime, data, currentEpoch, newEpoch);
         }
