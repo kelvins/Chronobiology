@@ -28,7 +28,7 @@ The project
 ---------------------------------
 The **objective** of this project is to provide a easy way to access **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
-Some functions that we pretend to provide with the package:
+Some analyzes that we pretend to provide with the package:
 
 - [X] The followed hours of highest activity (e.g. M10)
 - [X] The followed hours of lowest activity (e.g. L5)
@@ -37,7 +37,37 @@ Some functions that we pretend to provide with the package:
 - [ ] Interdaily Stability (IS)
 - [ ] Chi Square Periodogram
 
+Some functions we provide in version 1.1:
+
+``` go
+// Convert the data and dateTime slices to the new epoch passed by parameter
+func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error)
+
+// Function that finds the epoch of a time series (seconds)
+func FindEpoch(dateTime []time.Time) (epoch int)
+
+// Function that finds the highest activity average of the followed X hours (defined by parameter)
+func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error)
+
+// Function that finds the lowest activity average of the followed X hours (defined by parameter)
+func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error)
+
+// Function that finds the highest activity average of the followed 10 hours
+func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error)
+
+// Function that finds the lowest activity average of the following 5 hours
+func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error)
+
+// Function that calculates the relative amplitude based on the formula (M10-L5)/(M10+L5)
+func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float64, err error)
+
+// Function that calculates the intradaily variability
+func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error)
+```
+
 **Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
+
+**References**: Witting W, Kwa IH, Eikelenboom P, Mirmiran M, Swaab DF. Alterations in the circadian rest-activity rhythm in aging and Alzheimer's disease. Biol Psychiatry 1990;27:563-72.
 
 ----------
 
