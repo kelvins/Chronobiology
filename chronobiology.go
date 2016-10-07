@@ -81,10 +81,9 @@ func secondsTo(date1 time.Time, date2 time.Time) (int) {
     return int(seconds)
 }
 
-var EPSILON float64 = 0.00000001
-
 func floatEquals(a, b float64) bool {
-    if ((a - b) < EPSILON && (b - a) < EPSILON) {
+    var epsilon float64 = 0.00000001
+    if ((a - b) < epsilon && (b - a) < epsilon) {
         return true
     }
     return false
@@ -427,6 +426,33 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
         // Decrease
         } else {
             newDateTime, newData = decrease(dateTime, data, currentEpoch, newEpoch);
+        }
+    }
+
+    return
+}
+
+// Function created to filter the data based on the startTime and endTime passed as parameter
+func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.Time, endTime time.Time) (newDateTime []time.Time, newData []float64, err error) {
+
+    // Check the parameters
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+
+    // Filter the data based on the startTime and endTime
+    for index := 0; index < len(dateTime); index++ {
+
+        if (dateTime[index].After(startTime) || dateTime[index].Equal(startTime)) &&
+           (dateTime[index].Before(endTime)  || dateTime[index].Equal(endTime)) {
+
+            newDateTime = append(newDateTime, dateTime[index])
+            newData     = append(newData, data[index])
         }
     }
 
