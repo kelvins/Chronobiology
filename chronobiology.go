@@ -604,3 +604,33 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
 
     return
 }
+
+// Creates an average day based on the time series
+func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, newData []float64, err error) {
+
+    // Check the parameters
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
+        err = errors.New("LessThan2Days")
+        return
+    }
+
+    currentEpoch := FindEpoch(dateTime)
+
+    // Could not find the epoch
+    if currentEpoch == 0 {
+        err = errors.New("InvalidEpoch")
+        return
+    }
+
+    pointsPerDay := 1440 / currentEpoch
+
+    return
+}
