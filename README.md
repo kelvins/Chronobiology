@@ -30,7 +30,7 @@ The **objective** of this project is to provide a easy way to access **chronobio
 
 Some analyzes that we pretend to provide with the package:
 
-- [X] Convert the data epoch
+- [X] Convert the data based on the epoch
 - [X] Filter data by date/time
 - [ ] Calculate Average Day
 - [ ] Fill gaps in data
@@ -45,37 +45,40 @@ Some functions we provide in version 1.1:
 
 ``` go
 // Convert the data and dateTime slices to the new epoch passed by parameter
-func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error)
+func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error){}
 
 // Function that finds the epoch of a time series (seconds)
-func FindEpoch(dateTime []time.Time) (epoch int)
+func FindEpoch(dateTime []time.Time) (epoch int){}
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
-func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error)
+func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error){}
 
 // Function that finds the lowest activity average of the followed X hours (defined by parameter)
-func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error)
+func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error){}
 
 // Function that finds the highest activity average of the followed 10 hours
-func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error)
+func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error){}
 
 // Function that finds the lowest activity average of the following 5 hours
-func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error)
+func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error){}
 
 // Function that calculates the relative amplitude based on the formula (M10-L5)/(M10+L5)
-func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float64, err error)
+func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float64, err error){}
 
 // Function that calculates the intradaily variability
-func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error)
+func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error){}
 
 // Function that calculates the interdaily stability
-func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, err error)
+func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, err error){}
 
 // Function created to filter the data based on the startTime and endTime passed as parameter
-func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.Time, endTime time.Time) (newDateTime []time.Time, newData []float64, err error)
+func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.Time, endTime time.Time) (newDateTime []time.Time, newData []float64, err error){}
 
 // Function that searches for gaps in the time series and fills it with a specific value passed as parameter (usually zero)
-func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDateTime []time.Time, newData []float64, err error)
+func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDateTime []time.Time, newData []float64, err error){}
+
+// Creates an average day based on the time series
+func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, newData []float64, err error) {}
 ```
 
 **Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
