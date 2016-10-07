@@ -560,3 +560,47 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
 
     return
 }
+
+// Function that searches for gaps in the time series and fills it with a specific value passed as parameter (usually zero)
+func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDateTime []time.Time, newData []float64, err error) {
+
+    // Check the parameters
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+
+    currentEpoch := FindEpoch(dateTime)
+
+    // Could not find the epoch
+    if currentEpoch == 0 {
+        err = errors.New("InvalidEpoch")
+        return
+    }
+
+    for index := 0; index < len(dateTime)-1; index++ {
+        // If this condition is true, then this is a gap
+        if secondsTo(dateTime[index], dateTime[index+1]) >= (currentEpoch*2) {
+
+            tempDateTime = dateTime[index]
+            count := (secondsTo(dateTime[index], dateTime[index+1]) / currentEpoch) - 1
+
+            for tempIndex := 0; tempIndex < count; tempIndex++ {
+                tempDateTime = tempDateTime.Add(time.Duration(currentEpoch) * time.Second)
+                newDateTime  = append(newDateTime, value)
+                newData      = append(newData, value)
+            }
+        }
+        else
+        {
+            newDateTime = append(newDateTime, dateTime[index])
+            newData     = append(newData, data[index])
+        }
+    }
+
+    return
+}
