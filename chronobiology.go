@@ -458,3 +458,105 @@ func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.T
 
     return
 }
+
+// Function that calculates the interdaily stability
+func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, err error) {
+
+    // Check the parameters
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
+        err = errors.New("LessThan2Days")
+        return
+    }
+
+    currentEpoch := FindEpoch(dateTime)
+
+    // Could not find the epoch
+    if currentEpoch == 0 {
+        err = errors.New("InvalidEpoch")
+        return
+    }
+
+    if currentEpoch != 60 {
+        dateTime, data, convertError := ConvertDataBasedOnEpoch(dateTime, data, 60)
+
+        if convertError != nil {
+            err = errors.New("ErrorConvertingData")
+            return
+        }
+    }
+
+    // The zero position is allocated to store the average value of the IS vector
+    is = append(is, 0.0)
+    for isIndex := 1; isIndex <= 60; isIndex++ {
+
+        if 1440 % isIndex == 0 {
+
+            // Normalizes data to the new epoch (minutes)
+            temporaryData, _ := normalizeDataIS(dateTime, data, isIndex)
+
+            // Calculate the average day
+            averageDay, _ := AverageDay(_, temporaryData, isIndex)
+
+            // Get the new N (length)
+            n := len(temporaryData)
+
+            // Calculate the number of points per day
+            //p := len(averageDay)
+            p := 1440 / isIndex
+
+            // Calculate the new average (Xm)
+            average := average(temporaryData)
+
+            numerator   := 0.0
+            denominator := 0.0
+
+            // The "h" value represents the same "h" from the IS calculation formula
+            for h := 0; h < p; h++ {
+                numerator += math.Pow((averageDay[h]-average), 2)
+            }
+
+            // The "i" value represents the same "i" from the IS calculation formula
+            for i := 0; i < n; i++ {
+                denominator += math.Pow((temporaryData[i]-average), 2)
+            }
+
+            numerator   = n * numerator
+            denominator = p * denominator
+
+            // Prevent NaN
+            if denominator == 0 {
+                is = append(is, -1.0)
+            } else {
+                is = append(is, (numerator/denominator))
+            }
+        }
+        else
+        {
+            // Append -1 in the positions that will not be used
+            is = append(is, -1.0)
+        }
+    }
+
+    // Calculates the IS average of all "valid" values
+    average := 0.0
+    count   := 0
+
+    for index := 0; index < len(is); index++ {
+        if is[index] > -1.0 {
+            average += is[index]
+            count++
+        }
+    }
+
+    is[0] = average/float64(count)
+
+    return
+}
