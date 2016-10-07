@@ -30,6 +30,10 @@ The **objective** of this project is to provide a easy way to access **chronobio
 
 Some analyzes that we pretend to provide with the package:
 
+- [X] Convert the data epoch
+- [X] Filter data by date/time
+- [ ] Calculate Average Day
+- [ ] Fill gaps in data
 - [X] The followed hours of highest activity (e.g. M10)
 - [X] The followed hours of lowest activity (e.g. L5)
 - [X] Relative Amplitude (RA)
@@ -63,6 +67,15 @@ func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float6
 
 // Function that calculates the intradaily variability
 func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error)
+
+// Function that calculates the interdaily stability
+func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, err error)
+
+// Function created to filter the data based on the startTime and endTime passed as parameter
+func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.Time, endTime time.Time) (newDateTime []time.Time, newData []float64, err error)
+
+// Function that searches for gaps in the time series and fills it with a specific value passed as parameter (usually zero)
+func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDateTime []time.Time, newData []float64, err error)
 ```
 
 **Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
