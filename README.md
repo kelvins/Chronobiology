@@ -28,7 +28,7 @@ The project
 ---------------------------------
 The **objective** of this project is to provide a easy way to access **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
-Some analyzes that we pretend to provide with the package:
+Some analyzes and features that we pretend to provide with the package:
 
 - [X] Convert the data based on the epoch
 - [X] Filter data by date/time

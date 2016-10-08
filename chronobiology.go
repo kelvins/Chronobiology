@@ -138,6 +138,55 @@ func increase(dateTime []time.Time, data []float64, currentEpoch int, newEpoch i
     return
 }
 
+// Function used in the IS analysis to normalize the data to a specific epoch passed as parameter
+func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporaryDateTime []time.Time, temporaryData []float64, err error) {
+
+    // Check the parameters
+    if len(dateTime) == 0 || len(data) == 0 {
+        err = errors.New("Empty")
+        return
+    }
+    if len(dateTime) != len(data) {
+        err = errors.New("DifferentSize")
+        return
+    }
+
+    // If the minute is equal to 1, just return the original slices
+    if minutes == 1 {
+        temporaryDateTime = dateTime
+        temporaryData     = data
+        return
+    }
+
+    // Store the first DateTime
+    currentDateTime := dateTime[0]
+
+    // Gets the last valid position according to the minutes passed by parameter
+    lastValidIndex := -1
+    for index := len(dateTime); index > 0; index-- {
+        if index % minutes == 0 {
+            lastValidIndex = index
+            break
+        }
+    }
+
+    count := 0
+    tempData   := 0.0
+    // "Normalize" the data based on the minutes passed as parameter
+    for index := 0; index < lastValidIndex; index += minutes {
+        for tempIndex := index; tempIndex < index+minutes; tempIndex++ {
+            tempData += data[tempIndex]
+            count++
+        }
+
+        temporaryDateTime = append(temporaryDateTime, currentDateTime)
+        temporaryData     = append(temporaryData, (tempData/float64(count)))
+        currentDateTime   = currentDateTime.Add(time.Duration(minutes) * time.Minute)
+    }
+
+    return
+}
+
 /* END INTERNAL FUNCTIONS */
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
@@ -500,10 +549,10 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
         if 1440 % isIndex == 0 {
 
             // Normalizes data to the new epoch (minutes)
-            temporaryData, _ := normalizeDataIS(dateTime, data, isIndex)
+            temporaryDateTime, temporaryData, _ := normalizeDataIS(dateTime, data, isIndex)
 
             // Calculate the average day
-            averageDay, _ := AverageDay(_, temporaryData, isIndex)
+            averageDay, _ := AverageDay(temporaryDateTime, temporaryData)
 
             // Get the new N (length)
             n := len(temporaryData)
@@ -594,9 +643,7 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
                 newDateTime  = append(newDateTime, value)
                 newData      = append(newData, value)
             }
-        }
-        else
-        {
+        } else {
             newDateTime = append(newDateTime, dateTime[index])
             newData     = append(newData, data[index])
         }
@@ -630,7 +677,38 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
         return
     }
 
-    pointsPerDay := 1440 / currentEpoch
+    gapValue := -999.999
+    dateTime, data, _ := FillGapsInData(dateTime, data, gapValue)
+
+    pointsPerDay := (60*1440) / currentEpoch
+
+    var countPoints []int
+
+    for index := 0; index < pointsPerDay; index++ {
+        newData     = append(newData, 0.0)
+        countPoints = append(countPoints, 0)
+    }
+
+    pointIndex  := 0
+    for index := 0; index < len(dateTime); index++ {
+        if pointIndex >= pointsPerDay {
+            pointIndex = 0
+        }
+
+        if !floatEquals(data[index], gapValue) {
+            newData[pointIndex] += data[index]
+            countPoints[pointIndex] += 1
+        }
+
+        pointIndex++
+    }
+
+    tempDateTime := dateTime[0]
+    for index := 0; index < len(newData); index++ {
+        newDateTime  = append(newDateTime, tempDateTime)
+        tempDateTime = tempDateTime.Add(time.Duration(currentEpoch) * time.Second)
+        newData[index] = newData[index] / countPoints[index]
+    }
 
     return
 }
