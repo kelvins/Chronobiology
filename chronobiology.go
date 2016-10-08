@@ -534,7 +534,10 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
     }
 
     if currentEpoch != 60 {
-        dateTime, data, convertError := ConvertDataBasedOnEpoch(dateTime, data, 60)
+        newDateTime, newData, convertError := ConvertDataBasedOnEpoch(dateTime, data, 60)
+
+        dateTime = newDateTime
+        data     = newData
 
         if convertError != nil {
             err = errors.New("ErrorConvertingData")
@@ -552,14 +555,14 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
             temporaryDateTime, temporaryData, _ := normalizeDataIS(dateTime, data, isIndex)
 
             // Calculate the average day
-            averageDay, _ := AverageDay(temporaryDateTime, temporaryData)
+            _, averageDayData, _ := AverageDay(temporaryDateTime, temporaryData)
 
             // Get the new N (length)
             n := len(temporaryData)
 
             // Calculate the number of points per day
-            //p := len(averageDay)
-            p := 1440 / isIndex
+            p := len(averageDayData)
+            //p := 1440 / isIndex
 
             // Calculate the new average (Xm)
             average := average(temporaryData)
@@ -569,7 +572,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
 
             // The "h" value represents the same "h" from the IS calculation formula
             for h := 0; h < p; h++ {
-                numerator += math.Pow((averageDay[h]-average), 2)
+                numerator += math.Pow((averageDayData[h]-average), 2)
             }
 
             // The "i" value represents the same "i" from the IS calculation formula
@@ -577,8 +580,8 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
                 denominator += math.Pow((temporaryData[i]-average), 2)
             }
 
-            numerator   = n * numerator
-            denominator = p * denominator
+            numerator   = float64(n) * numerator
+            denominator = float64(p) * denominator
 
             // Prevent NaN
             if denominator == 0 {
@@ -586,9 +589,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
             } else {
                 is = append(is, (numerator/denominator))
             }
-        }
-        else
-        {
+        } else {
             // Append -1 in the positions that will not be used
             is = append(is, -1.0)
         }
@@ -635,12 +636,12 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
         // If this condition is true, then this is a gap
         if secondsTo(dateTime[index], dateTime[index+1]) >= (currentEpoch*2) {
 
-            tempDateTime = dateTime[index]
+            tempDateTime := dateTime[index]
             count := (secondsTo(dateTime[index], dateTime[index+1]) / currentEpoch) - 1
 
             for tempIndex := 0; tempIndex < count; tempIndex++ {
                 tempDateTime = tempDateTime.Add(time.Duration(currentEpoch) * time.Second)
-                newDateTime  = append(newDateTime, value)
+                newDateTime  = append(newDateTime, tempDateTime)
                 newData      = append(newData, value)
             }
         } else {
@@ -678,7 +679,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
     }
 
     gapValue := -999.999
-    dateTime, data, _ := FillGapsInData(dateTime, data, gapValue)
+    dateTime, data, _ = FillGapsInData(dateTime, data, gapValue)
 
     pointsPerDay := (60*1440) / currentEpoch
 
@@ -707,7 +708,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
     for index := 0; index < len(newData); index++ {
         newDateTime  = append(newDateTime, tempDateTime)
         tempDateTime = tempDateTime.Add(time.Duration(currentEpoch) * time.Second)
-        newData[index] = newData[index] / countPoints[index]
+        newData[index] = newData[index] / float64(countPoints[index])
     }
 
     return
