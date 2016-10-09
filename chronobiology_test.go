@@ -926,3 +926,129 @@ func TestFilterDataByDateTime(t *testing.T) {
           }
       }
 }
+
+func TestFillGapsInData(t *testing.T) {
+
+      utc, _ := time.LoadLocation("UTC")
+      tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+      /* Test with invalid parameters */
+
+      var dateTimeInvalid []time.Time
+      var dataInvalid []float64
+
+      // Empty slices
+      _, _, err := chronobiology.FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      dataInvalid = append(dataInvalid, 35.50)
+
+      // Different sizes
+      _, _, err = chronobiology.FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      /* Test with valid parameters */
+
+      /* Test 1 - Without any gap */
+
+      var dateTime1 []time.Time
+      var data1 []float64
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+      for index := 0; index < 2880; index++ {
+          dateTime1    = append(dateTime1, tempDateTime)
+          tempDateTime = tempDateTime.Add(60 * time.Second)
+          data1        = append(data1, 100.00)
+      }
+
+      /* Test 2 */
+
+      var dateTime2 []time.Time
+      var data2 []float64
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+      for index := 0; index < 2880; index++ {
+        if index < 2000 || index > 2100 {
+            dateTime2 = append(dateTime2, tempDateTime)
+            data2     = append(data2, 100.00)
+        }
+        tempDateTime = tempDateTime.Add(60 * time.Second)
+      }
+
+      var newDateTime2 []time.Time
+      var newData2 []float64
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+      for index := 0; index < 2880; index++ {
+          newDateTime2 = append(newDateTime2, tempDateTime)
+          tempDateTime = tempDateTime.Add(60 * time.Second)
+          if index < 2000 || index > 2100 {
+              newData2 = append(newData2, 100.00)
+          } else {
+              newData2 = append(newData2, 0.0)
+          }
+      }
+
+      /* Test 3 */
+
+      var dateTime3 []time.Time
+      var data3 []float64
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+      for index := 0; index < 8640; index++ {
+        if index < 3000 || index > 5000 {
+            dateTime3 = append(dateTime3, tempDateTime)
+            data3     = append(data3, 100.00)
+        }
+        tempDateTime = tempDateTime.Add(30 * time.Second)
+      }
+
+      var newDateTime3 []time.Time
+      var newData3 []float64
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+      for index := 0; index < 8640; index++ {
+          newDateTime3 = append(newDateTime3, tempDateTime)
+          newData3     = append(newData3, 100.00)
+          tempDateTime = tempDateTime.Add(30 * time.Second)
+      }
+
+      // Table tests
+      var tTests = []struct {
+          dateTime []time.Time
+          data []float64
+          value float64
+          newDateTime []time.Time
+          newData []float64
+      }{
+          { dateTime1, data1,    0.0,    dateTime1,    data1 },
+          { dateTime2, data2,    0.0, newDateTime2, newData2 },
+          { dateTime3, data3, 100.00, newDateTime3, newData3 },
+      }
+
+      // Test with all values in the table
+      for _, table := range tTests {
+          newDateTime, newData, err := chronobiology.FillGapsInData(table.dateTime, table.data, table.value)
+
+          if err != nil {
+              t.Error("Expected error = nil.")
+          } else {
+              if !sliceTimeEquals(newDateTime, table.newDateTime) {
+                  t.Error(
+                      "Different DateTime Slices.",
+                  )
+              }
+              if !sliceFloatEquals(newData, table.newData) {
+                  t.Error(
+                      "Different Data Slices.",
+                  )
+              }
+          }
+      }
+}

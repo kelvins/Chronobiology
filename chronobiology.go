@@ -637,6 +637,10 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
     }
 
     for index := 0; index < len(dateTime)-1; index++ {
+
+        newDateTime   = append(newDateTime, dateTime[index])
+        newData       = append(newData, data[index])
+
         // If this condition is true, then this is a gap
         if secondsTo(dateTime[index], dateTime[index+1]) >= (currentEpoch*2) {
 
@@ -648,9 +652,6 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
                 newDateTime  = append(newDateTime, tempDateTime)
                 newData      = append(newData, value)
             }
-        } else {
-            newDateTime = append(newDateTime, dateTime[index])
-            newData     = append(newData, data[index])
         }
     }
 
