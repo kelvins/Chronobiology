@@ -32,7 +32,7 @@ Some analyzes and features that we pretend to provide with the package:
 
 - [X] Convert the data based on the epoch
 - [X] Filter data by date/time
-- [ ] Calculate Average Day
+- [X] Calculate Average Day
 - [ ] Fill gaps in data
 - [X] The followed hours of highest activity (e.g. M10)
 - [X] The followed hours of lowest activity (e.g. L5)

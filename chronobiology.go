@@ -493,6 +493,10 @@ func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.T
         err = errors.New("DifferentSize")
         return
     }
+    if endTime.Before(startTime) {
+        err = errors.New("InvalidTimeRange")
+        return
+    }
 
     // Filter the data based on the startTime and endTime
     for index := 0; index < len(dateTime); index++ {

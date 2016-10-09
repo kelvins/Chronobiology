@@ -771,7 +771,7 @@ func TestAverageDay(t *testing.T) {
       }
 
       // Table tests
-      var tTests2 = []struct {
+      var tTests = []struct {
           dateTime []time.Time
           data []float64
           expectedDateTime []time.Time
@@ -782,7 +782,7 @@ func TestAverageDay(t *testing.T) {
       }
 
       // Test with all values in the table
-      for _, table := range tTests2 {
+      for _, table := range tTests {
           newDateTime, newData, err := chronobiology.AverageDay(table.dateTime, table.data)
 
           if err != nil {
@@ -794,6 +794,131 @@ func TestAverageDay(t *testing.T) {
                   )
               }
               if !sliceFloatEquals(newData, table.expectedData) {
+                  t.Error(
+                      "Different Data Slices.",
+                  )
+              }
+          }
+      }
+}
+
+func TestFilterDataByDateTime(t *testing.T) {
+
+      utc, _ := time.LoadLocation("UTC")
+      tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+      /* Test with invalid parameters */
+
+      var dateTimeInvalid []time.Time
+      var dataInvalid []float64
+      startTimeInvalid := time.Date(2015,1,1,0,0,0,0,utc)
+      endTimeInvalid   := time.Date(2015,1,2,0,0,0,0,utc)
+
+      // Empty slices
+      _, _, err := chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      dataInvalid = append(dataInvalid, 35.50)
+
+      // Different sizes
+      _, _, err = chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      dateTimeInvalid  = append(dateTimeInvalid, startTimeInvalid)
+      startTimeInvalid = time.Date(2015,1,1,0,0,0,0,utc)
+      endTimeInvalid   = time.Date(2014,1,1,0,0,0,0,utc)
+
+      // Invalid time range
+      _, _, err = chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      /* Test with valid parameters */
+
+      /* The base data */
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+      var dateTime []time.Time
+      var data []float64
+
+      // 01/01/2015 - 00:00:00 <-> 04/01/2015 - 23:00:00
+      for index := 0; index < 96; index++ {
+          dateTime = append(dateTime, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+          data = append(data, 100.00)
+      }
+
+      /* Test 1 */
+
+      var newDateTime1 []time.Time
+      var newData1 []float64
+      startTime1 := time.Date(2015,1,3,0,0,0,0,utc)
+      endTime1   := time.Date(2015,1,9,0,0,0,0,utc)
+
+      tempDateTime = time.Date(2015,1,3,0,0,0,0,utc)
+      // 03/01/2015 - 00:00:00 <-> 04/01/2015 - 23:00:00
+      for index := 0; index < 48; index++ {
+          newDateTime1 = append(newDateTime1, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+          newData1     = append(newData1, 100.00)
+      }
+
+     /* Test 2 */
+
+      var newDateTime2 []time.Time
+      var newData2 []float64
+      startTime2 := time.Date(2015,1,2,2,0,0,0,utc)
+      endTime2   := time.Date(2015,1,3,9,0,0,0,utc)
+
+      tempDateTime = time.Date(2015,1,2,2,0,0,0,utc)
+      // 02/01/2015 - 02:00:00 <-> 03/01/2015 - 09:00:00
+      for index := 0; index < 32; index++ {
+          newDateTime2 = append(newDateTime2, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+          newData2     = append(newData2, 100.00)
+      }
+
+      /* Test 3 */
+
+      startTime3 := time.Date(2014,12,20,0,0,0,0,utc)
+      endTime3   := time.Date(2015,2,10,0,0,0,0,utc)
+
+      // Table tests
+      var tTests = []struct {
+          dateTime []time.Time
+          data []float64
+          startTime time.Time
+          endTime time.Time
+          newDateTime []time.Time
+          newData []float64
+      }{
+          { dateTime, data, startTime1, endTime1, newDateTime1, newData1 },
+          { dateTime, data, startTime2, endTime2, newDateTime2, newData2 },
+          { dateTime, data, startTime3, endTime3, dateTime, data },
+      }
+
+      // Test with all values in the table
+      for _, table := range tTests {
+          newDateTime, newData, err := chronobiology.FilterDataByDateTime(table.dateTime, table.data, table.startTime, table.endTime)
+
+          if err != nil {
+              t.Error("Expected error = nil.")
+          } else {
+              if !sliceTimeEquals(newDateTime, table.newDateTime) {
+                  t.Error(
+                      "Different DateTime Slices.",
+                  )
+              }
+              if !sliceFloatEquals(newData, table.newData) {
                   t.Error(
                       "Different Data Slices.",
                   )
