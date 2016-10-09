@@ -650,6 +650,9 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
         }
     }
 
+    newDateTime = append(newDateTime, dateTime[len(dateTime)-1])
+    newData     = append(newData, data[len(dateTime)-1])
+
     return
 }
 
@@ -691,7 +694,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
     }
 
     pointIndex  := 0
-    for index := 0; index < len(dateTime); index++ {
+    for index := 0; index < len(data); index++ {
         if pointIndex >= pointsPerDay {
             pointIndex = 0
         }
@@ -708,7 +711,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
     for index := 0; index < len(newData); index++ {
         newDateTime  = append(newDateTime, tempDateTime)
         tempDateTime = tempDateTime.Add(time.Duration(currentEpoch) * time.Second)
-        newData[index] = newData[index] / float64(countPoints[index])
+        newData[index] = roundPlus((newData[index] / float64(countPoints[index])), 4)
     }
 
     return

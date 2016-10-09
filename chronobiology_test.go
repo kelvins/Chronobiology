@@ -8,14 +8,45 @@ import (
     "github.com/kelvins/chronobiology"
 )
 
-var EPSILON float64 = 0.00000001
+/* Internal Functions */
 
 func floatEquals(a, b float64) bool {
-  	if ((a - b) < EPSILON && (b - a) < EPSILON) {
+    var epsilon float64 = 0.00000001
+  	if ((a - b) < epsilon && (b - a) < epsilon) {
   		  return true
   	}
   	return false
 }
+
+func sliceTimeEquals(slice1 []time.Time, slice2 []time.Time) (bool) {
+    if len(slice1) != len(slice2) {
+        return false
+    }
+
+    for index := 0; index < len(slice1); index++ {
+        if !slice1[index].Equal(slice2[index]) {
+            return false
+        }
+    }
+
+    return true
+}
+
+func sliceFloatEquals(slice1 []float64, slice2 []float64) (bool) {
+    if len(slice1) != len(slice2) {
+        return false
+    }
+
+    for index := 0; index < len(slice1); index++ {
+        if !floatEquals(slice1[index], slice2[index]) {
+            return false
+        }
+    }
+
+    return true
+}
+
+/* ################# */
 
 func TestInvalidParametersHigherActivity(t *testing.T) {
     // Get UTC
@@ -635,4 +666,138 @@ func TestIntradailyVariability(t *testing.T) {
             }
         }
     }
+}
+
+func TestAverageDay(t *testing.T) {
+
+      utc, _ := time.LoadLocation("UTC")
+      tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+      /* Test with invalid parameters */
+
+      var dateTimeInvalid []time.Time
+      var dataInvalid []float64
+
+      _, _, err := chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      dataInvalid = append(dataInvalid, 35.50)
+
+      _, _, err = chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      dataInvalid = nil
+
+      for index := 0; index < 20; index++ {
+          dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+          dataInvalid = append(dataInvalid, 35.50)
+      }
+
+      _, _, err = chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+
+      if err == nil {
+          t.Error("Expected error != nil.")
+      }
+
+      /* Test with valid parameters */
+
+      /* Test 1 */
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+      var dateTime1 []time.Time
+      var data1 []float64
+
+      for index := 0; index < 72; index++ {
+          dateTime1 = append(dateTime1, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+
+          if index < 24 {
+              data1 = append(data1, 45.50)
+          } else if index < 48 {
+              data1 = append(data1, 102.50)
+          } else {
+              data1 = append(data1, 86.50)
+          }
+      }
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+      var newDateTime1 []time.Time
+      var newData1 []float64
+
+      for index := 0; index < 24; index++ {
+            newDateTime1 = append(newDateTime1, tempDateTime)
+            tempDateTime = tempDateTime.Add(1 * time.Hour)
+            newData1 = append(newData1, 78.1667)
+      }
+
+      /* Test 2 */
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+      var dateTime2 []time.Time
+      var data2 []float64
+
+      for index := 0; index < 60; index++ {
+          dateTime2 = append(dateTime2, tempDateTime)
+          tempDateTime = tempDateTime.Add(1 * time.Hour)
+
+          if index < 24 {
+              data2 = append(data2, 50.00)
+          } else if index < 48 {
+              data2 = append(data2, 150.00)
+          } else {
+              data2 = append(data2, 100.00)
+          }
+      }
+
+      tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+      var newDateTime2 []time.Time
+      var newData2 []float64
+
+      for index := 0; index < 24; index++ {
+            newDateTime2 = append(newDateTime2, tempDateTime)
+            tempDateTime = tempDateTime.Add(1 * time.Hour)
+            newData2 = append(newData2, 100.00)
+      }
+
+      // Table tests
+      var tTests2 = []struct {
+          dateTime []time.Time
+          data []float64
+          expectedDateTime []time.Time
+          expectedData []float64
+      }{
+          { dateTime1, data1, newDateTime1, newData1 },
+          { dateTime2, data2, newDateTime2, newData2 },
+      }
+
+      // Test with all values in the table
+      for _, table := range tTests2 {
+          newDateTime, newData, err := chronobiology.AverageDay(table.dateTime, table.data)
+
+          if err != nil {
+              t.Error("Expected error = nil.")
+          } else {
+              if !sliceTimeEquals(newDateTime, table.expectedDateTime) {
+                  t.Error(
+                      "Different DateTime Slices.",
+                  )
+              }
+              if !sliceFloatEquals(newData, table.expectedData) {
+                  t.Error(
+                      "Different Data Slices.",
+                  )
+              }
+          }
+      }
 }
