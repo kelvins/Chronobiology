@@ -1,6 +1,9 @@
 Chronobiology GoLang Package
 ==========================
 
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Powered By: GoReleaser](https://img.shields.io/badge/powered%20by-kelvins-green.svg?style=flat-square)](https://github.com/kelvins)
+
 This is an open source package developed to provide **chronobiology** functions in **GoLang**.
 
 ----------
@@ -11,7 +14,7 @@ GoLang
 
 The Go programming language was developed by **Google** and released in 2009. To know more about the **GoLang** please visit the official [web site][1].
 
-![](https://www.gopheracademy.com/images/cowboy-color.png)
+![](http://i.imgur.com/0QgXKrO.png)
 
 ----------
 
