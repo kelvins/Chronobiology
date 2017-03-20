@@ -21,18 +21,6 @@ func roundPlus(value float64, places int) (float64) {
     return round(value * shift) / shift;
 }
 
-// Calculates the average of a float64 slice
-func average(data []float64) (float64) {
-    var average float64
-    if len(data) == 0 {
-      return average
-    }
-    for index := 0; index < len(data); index++ {
-        average += data[index]
-    }
-    return average / float64(len(data))
-}
-
 // Searches for a value in a slice and returns its position
 func findPosition(value int, data []int) (int) {
     if len(data) == 0 {
@@ -189,6 +177,18 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
 }
 
 /* END INTERNAL FUNCTIONS */
+
+// Calculates the average of a float64 slice
+func Average(data []float64) (float64) {
+    var average float64
+    if len(data) == 0 {
+      return average
+    }
+    for index := 0; index < len(data); index++ {
+        average += data[index]
+    }
+    return average / float64(len(data))
+}
 
 // Function that finds the highest activity average of the followed X hours (defined by parameter)
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
