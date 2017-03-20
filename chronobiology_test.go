@@ -314,7 +314,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     var myData []float64
 
     // Call the function with empty slices
-    _, _, err := HigherActivity(5, myDateTime, myData)
+    _, _, err := LowerActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -329,7 +329,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     }
 
     // Call the function with myData empty
-    _, _, err = HigherActivity(5, myDateTime, myData)
+    _, _, err = LowerActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -343,7 +343,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     myData = append(myData, 500.0) // 06
     myData = append(myData, 250.0) // 07
 
-    _, _, err = HigherActivity(5, myDateTime, myData)
+    _, _, err = LowerActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: DifferentSize")
@@ -351,13 +351,13 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
 
     myData = append(myData, 050.0) // 08
 
-    _, _, err = HigherActivity(0, myDateTime, myData)
+    _, _, err = LowerActivity(0, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: InvalidHours")
     }
 
-    _, _, err = HigherActivity(20, myDateTime, myData)
+    _, _, err = LowerActivity(20, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: HoursHigher")
@@ -393,62 +393,6 @@ func TestLowerActivity(t *testing.T) {
         tempDateTime = tempDateTime.Add(1 * time.Minute)
         myDateTime = append(myDateTime, tempDateTime)
         myData = append(myData, float64((12*60)-index))
-    }
-
-    // Tests with invalid parameters
-
-    // Hours = 0
-    _, _, err := LowerActivity(0, myDateTime, myData)
-
-    if err == nil {
-        t.Error(
-            "For: Hours 0 - ",
-            "Expect: InvalidHours",
-        )
-    }
-
-    var emptyDate []time.Time
-    var emptyData []float64
-
-    // Empty date
-    _, _, err = LowerActivity(2, emptyDate, myData)
-
-    if err == nil {
-        t.Error(
-            "For: EmptyDate - ",
-            "Expect: Empty",
-        )
-    }
-
-    // Empty data
-    _, _, err = LowerActivity(2, myDateTime, emptyData)
-
-    if err == nil {
-        t.Error(
-            "For: EmptyData - ",
-            "Expect: Empty",
-        )
-    }
-
-    // len(dateTime) != len(data)
-    emptyData = append(emptyData, 35.5)
-
-    _, _, err = LowerActivity(2, myDateTime, emptyData)
-
-    if err == nil {
-        t.Error(
-            "Expect: DifferentSize",
-        )
-    }
-
-    // Invalid hours
-    _, _, err = LowerActivity(48, myDateTime, myData)
-
-    if err == nil {
-        t.Error(
-            "For: Hours 48 - ",
-            "Expect: HoursHigher",
-        )
     }
 
     // Test with all values in the table
