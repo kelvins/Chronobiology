@@ -1,6 +1,8 @@
 Chronobiology GoLang Package
 ==========================
 
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+
 This is an open source package developed to provide **chronobiology** functions in **GoLang**.
 
 ----------
@@ -10,6 +12,8 @@ GoLang
 **Go**, also known as **GoLang**, is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 The Go programming language was developed by **Google** and released in 2009. To know more about the **GoLang** please visit the official [web site][1].
+
+![](http://i.imgur.com/0QgXKrO.png)
 
 ----------
 
