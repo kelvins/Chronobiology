@@ -363,7 +363,7 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
 
         if len(tempData) > 0 {
 
-            average := average(tempData)
+            average := Average(tempData)
 
             // Calculates the numerator
             var numerator float64
@@ -570,7 +570,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
             //p := 1440 / isIndex
 
             // Calculate the new average (Xm)
-            average := average(temporaryData)
+            average := Average(temporaryData)
 
             numerator   := 0.0
             denominator := 0.0
