@@ -48,6 +48,24 @@ func sliceFloatEquals(slice1 []float64, slice2 []float64) (bool) {
 
 /* ################# */
 
+func TestAverage(t *testing.T) {
+    var data []float64
+
+    avg := chronobiology.Average(data)
+    if !floatEquals(avg, 0.0) {
+        t.Error("Expect: HoursHigher")
+    }
+
+    data = append(data,  50.0)
+    data = append(data, 100.0)
+    data = append(data, 150.0)
+
+    avg = chronobiology.Average(data)
+    if !floatEquals(avg, 100.0) {
+        t.Error("Expect: HoursHigher")
+    }
+}
+
 func TestInvalidParametersHigherActivity(t *testing.T) {
     // Get UTC
     utc, _ := time.LoadLocation("UTC")
