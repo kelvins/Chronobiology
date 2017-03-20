@@ -277,6 +277,43 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     }
 }
 
+func TestL5(t *testing.T) {
+    // Get UTC
+    utc, _ := time.LoadLocation("UTC")
+
+    // Create the slices
+    var myDateTime []time.Time
+    var myData []float64
+
+    tempDateTime := time.Date(2016,1,1,0,0,0,0,utc)
+
+    // Fill the myDateTime (12 hours * 60 minutes) time.Minute
+    for index := 0; index < (12*60); index++ {
+        tempDateTime = tempDateTime.Add(1 * time.Minute)
+        myDateTime = append(myDateTime, tempDateTime)
+        myData = append(myData, float64((12*60)-index))
+    }
+
+    l5, onsetL5, err := L5(myDateTime, myData)
+    if err != nil {
+        t.Error(
+            "Expect: error not nil",
+        )
+    }
+    if !floatEquals(l5, 151.5) {
+        t.Error(
+            "expected: 91.5",
+            "received: ", l5,
+        )
+    }
+    if onsetL5.Format("02/01/2006 15:04:05") != "01/01/2016 07:00:00" {
+        t.Error(
+            "expected: 01/01/2016 09:00:00",
+            "received: ", onsetL5.Format("02/01/2006 15:04:05"),
+        )
+    }
+}
+
 func TestLowerActivity(t *testing.T) {
     // Table tests
     var tTests = []struct {
