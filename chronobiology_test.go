@@ -89,6 +89,56 @@ func TestFloatEquals(t *testing.T) {
     }
 }
 
+func TestM10(t *testing.T) {
+    // Get UTC
+    utc, _ := time.LoadLocation("UTC")
+
+    // Create the slices
+    var myDateTime []time.Time
+    var myData []float64
+
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    // Fill the myDateTime with 1 - 12 hours
+    for index := 0; index < 12; index++ {
+        tempDateTime = tempDateTime.Add(1 * time.Hour)
+        myDateTime = append(myDateTime, tempDateTime)
+    }
+
+    // Creates the data slice
+    myData = append(myData, 450.0) // 01
+    myData = append(myData, 050.0) // 02
+    myData = append(myData, 025.0) // 03
+    myData = append(myData, 020.0) // 04
+    myData = append(myData, 100.0) // 05
+    myData = append(myData, 500.0) // 06
+    myData = append(myData, 250.0) // 07
+    myData = append(myData, 990.0) // 08
+    myData = append(myData, 130.0) // 09
+    myData = append(myData, 540.0) // 10
+    myData = append(myData, 040.0) // 11
+    myData = append(myData, 050.0) // 12
+
+    m10, onsetM10, err := M10(myDateTime, myData)
+    if err != nil {
+        t.Error(
+            "Expect: error not nil",
+        )
+    }
+    if !floatEquals(m10, 305.5000) {
+        t.Error(
+            "expected: 305.5000",
+            "received: ", m10,
+        )
+    }
+    if onsetM10.Format("02/01/2006 15:04:05") != "01/01/2015 01:00:00" {
+        t.Error(
+            "expected: 01/01/2016 01:00:00",
+            "received: ", onsetM10.Format("02/01/2006 15:04:05"),
+        )
+    }
+}
+
 func TestInvalidParametersHigherActivity(t *testing.T) {
     // Get UTC
     utc, _ := time.LoadLocation("UTC")
@@ -218,6 +268,43 @@ func TestHigherActivity(t *testing.T) {
     }
 }
 
+func TestL5(t *testing.T) {
+    // Get UTC
+    utc, _ := time.LoadLocation("UTC")
+
+    // Create the slices
+    var myDateTime []time.Time
+    var myData []float64
+
+    tempDateTime := time.Date(2016,1,1,0,0,0,0,utc)
+
+    // Fill the myDateTime (12 hours * 60 minutes) time.Minute
+    for index := 0; index < (12*60); index++ {
+        tempDateTime = tempDateTime.Add(1 * time.Minute)
+        myDateTime = append(myDateTime, tempDateTime)
+        myData = append(myData, float64((12*60)-index))
+    }
+
+    l5, onsetL5, err := L5(myDateTime, myData)
+    if err != nil {
+        t.Error(
+            "Expect: error not nil",
+        )
+    }
+    if !floatEquals(l5, 151.5) {
+        t.Error(
+            "expected: 151.5",
+            "received: ", l5,
+        )
+    }
+    if onsetL5.Format("02/01/2006 15:04:05") != "01/01/2016 07:00:00" {
+        t.Error(
+            "expected: 01/01/2016 09:00:00",
+            "received: ", onsetL5.Format("02/01/2006 15:04:05"),
+        )
+    }
+}
+
 func TestInvalidParametersLowerActivity(t *testing.T) {
     // Get UTC
     utc, _ := time.LoadLocation("UTC")
@@ -274,43 +361,6 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
 
     if err == nil {
         t.Error("Expect: HoursHigher")
-    }
-}
-
-func TestL5(t *testing.T) {
-    // Get UTC
-    utc, _ := time.LoadLocation("UTC")
-
-    // Create the slices
-    var myDateTime []time.Time
-    var myData []float64
-
-    tempDateTime := time.Date(2016,1,1,0,0,0,0,utc)
-
-    // Fill the myDateTime (12 hours * 60 minutes) time.Minute
-    for index := 0; index < (12*60); index++ {
-        tempDateTime = tempDateTime.Add(1 * time.Minute)
-        myDateTime = append(myDateTime, tempDateTime)
-        myData = append(myData, float64((12*60)-index))
-    }
-
-    l5, onsetL5, err := L5(myDateTime, myData)
-    if err != nil {
-        t.Error(
-            "Expect: error not nil",
-        )
-    }
-    if !floatEquals(l5, 151.5) {
-        t.Error(
-            "expected: 91.5",
-            "received: ", l5,
-        )
-    }
-    if onsetL5.Format("02/01/2006 15:04:05") != "01/01/2016 07:00:00" {
-        t.Error(
-            "expected: 01/01/2016 09:00:00",
-            "received: ", onsetL5.Format("02/01/2006 15:04:05"),
-        )
     }
 }
 
