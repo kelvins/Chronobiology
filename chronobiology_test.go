@@ -1,22 +1,13 @@
 
-package chronobiology_test
+package chronobiology
 
 import (
     "time"
     "testing"
     "reflect"
-    "github.com/kelvins/chronobiology"
 )
 
 /* Internal Functions */
-
-func floatEquals(a, b float64) bool {
-    var epsilon float64 = 0.00000001
-  	if ((a - b) < epsilon && (b - a) < epsilon) {
-  		  return true
-  	}
-  	return false
-}
 
 func sliceTimeEquals(slice1 []time.Time, slice2 []time.Time) (bool) {
     if len(slice1) != len(slice2) {
@@ -51,18 +42,30 @@ func sliceFloatEquals(slice1 []float64, slice2 []float64) (bool) {
 func TestAverage(t *testing.T) {
     var data []float64
 
-    avg := chronobiology.Average(data)
+    avg := average(data)
     if !floatEquals(avg, 0.0) {
-        t.Error("Expect: HoursHigher")
+        t.Error("Expect: 0.0")
     }
 
     data = append(data,  50.0)
     data = append(data, 100.0)
     data = append(data, 150.0)
 
-    avg = chronobiology.Average(data)
+    avg = average(data)
     if !floatEquals(avg, 100.0) {
-        t.Error("Expect: HoursHigher")
+        t.Error("Expect: 100.0")
+    }
+}
+
+func TestFloatEquals(t *testing.T) {
+    if !floatEquals(12321.12321, 12321.12321) {
+        t.Error("Expect: true")
+    }
+    if floatEquals(111.123123, 111.123122) {
+        t.Error("Expect: false")
+    }
+    if !floatEquals(1.0000000001, 1.0000000000) {
+        t.Error("Expect: true")
     }
 }
 
@@ -75,7 +78,7 @@ func TestInvalidParametersHigherActivity(t *testing.T) {
     var myData []float64
 
     // Call the function with empty slices
-    _, _, err := chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err := HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -90,7 +93,7 @@ func TestInvalidParametersHigherActivity(t *testing.T) {
     }
 
     // Call the function with myData empty
-    _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err = HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -104,7 +107,7 @@ func TestInvalidParametersHigherActivity(t *testing.T) {
     myData = append(myData, 500.0) // 06
     myData = append(myData, 250.0) // 07
 
-    _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err = HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: DifferentSize")
@@ -112,13 +115,13 @@ func TestInvalidParametersHigherActivity(t *testing.T) {
 
     myData = append(myData, 050.0) // 08
 
-    _, _, err = chronobiology.HigherActivity(0, myDateTime, myData)
+    _, _, err = HigherActivity(0, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: InvalidHours")
     }
 
-    _, _, err = chronobiology.HigherActivity(20, myDateTime, myData)
+    _, _, err = HigherActivity(20, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: HoursHigher")
@@ -171,7 +174,7 @@ func TestHigherActivity(t *testing.T) {
 
     // Test with all values in the table
     for _, pair := range tTests {
-        higherActivity, onsetHigherActivity, err := chronobiology.HigherActivity(pair.hours, myDateTime, myData)
+        higherActivity, onsetHigherActivity, err := HigherActivity(pair.hours, myDateTime, myData)
         if err != nil {
             t.Error(
                 "For: ", pair.hours, " hours - ",
@@ -204,7 +207,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     var myData []float64
 
     // Call the function with empty slices
-    _, _, err := chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err := HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -219,7 +222,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     }
 
     // Call the function with myData empty
-    _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err = HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: Empty")
@@ -233,7 +236,7 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
     myData = append(myData, 500.0) // 06
     myData = append(myData, 250.0) // 07
 
-    _, _, err = chronobiology.HigherActivity(5, myDateTime, myData)
+    _, _, err = HigherActivity(5, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: DifferentSize")
@@ -241,13 +244,13 @@ func TestInvalidParametersLowerActivity(t *testing.T) {
 
     myData = append(myData, 050.0) // 08
 
-    _, _, err = chronobiology.HigherActivity(0, myDateTime, myData)
+    _, _, err = HigherActivity(0, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: InvalidHours")
     }
 
-    _, _, err = chronobiology.HigherActivity(20, myDateTime, myData)
+    _, _, err = HigherActivity(20, myDateTime, myData)
 
     if err == nil {
         t.Error("Expect: HoursHigher")
@@ -287,7 +290,7 @@ func TestLowerActivity(t *testing.T) {
 
     // Test with all values in the table
     for _, pair := range tTests {
-        lowerActivity, onsetLowerActivity, err := chronobiology.LowerActivity(pair.hours, myDateTime, myData)
+        lowerActivity, onsetLowerActivity, err := LowerActivity(pair.hours, myDateTime, myData)
         if err != nil {
             t.Error(
                 "For: ", pair.hours, " hours - ",
@@ -313,7 +316,7 @@ func TestLowerActivity(t *testing.T) {
 
 func TestRelativeAmplitude(t *testing.T) {
     // Expect an error
-    _, err := chronobiology.RelativeAmplitude(0.0, 0.0)
+    _, err := RelativeAmplitude(0.0, 0.0)
     if err == nil {
         t.Error(
             "Error: ", err,
@@ -337,7 +340,7 @@ func TestRelativeAmplitude(t *testing.T) {
 
     // Test with all values in the table
     for _, pair := range tTests {
-        relativeAmplitude, err := chronobiology.RelativeAmplitude(pair.highestAverage, pair.lowestAverage)
+        relativeAmplitude, err := RelativeAmplitude(pair.highestAverage, pair.lowestAverage)
         if err != nil {
             t.Error(
                 "Error: ", err,
@@ -437,7 +440,7 @@ func TestFindEpoch(t *testing.T) {
 
     // Test with all values in the table
     for _, pair := range tTests {
-        epoch := chronobiology.FindEpoch(pair.dateTime)
+        epoch := FindEpoch(pair.dateTime)
         if epoch != pair.epoch {
             t.Error(
                 "Expected: ", pair.epoch,
@@ -455,7 +458,7 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
     var dateTimeEmpty []time.Time
     var dataEmpty []float64
 
-    _, _, err := chronobiology.ConvertDataBasedOnEpoch(dateTimeEmpty, dataEmpty, 120)
+    _, _, err := ConvertDataBasedOnEpoch(dateTimeEmpty, dataEmpty, 120)
 
     if err == nil {
         t.Error("Expect error Empty")
@@ -470,7 +473,7 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
     dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
     dataInvalid     = append(dataInvalid, 123.5)
 
-    _, _, err = chronobiology.ConvertDataBasedOnEpoch(dateTimeInvalid, dataInvalid, 120)
+    _, _, err = ConvertDataBasedOnEpoch(dateTimeInvalid, dataInvalid, 120)
 
     if err == nil {
         t.Error("Expect error DifferentSize")
@@ -558,7 +561,7 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
 
     // Test with all values in the table
     for _, table := range tTests {
-        newDateTime, newData, err := chronobiology.ConvertDataBasedOnEpoch(table.dateTime, table.data, table.newEpoch)
+        newDateTime, newData, err := ConvertDataBasedOnEpoch(table.dateTime, table.data, table.newEpoch)
 
         if err != nil {
             t.Error("Expected error = nil.")
@@ -582,7 +585,7 @@ func TestIntradailyVariability(t *testing.T) {
     var dateTimeEmpty []time.Time
     var dataEmpty []float64
 
-    _, err := chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+    _, err := IntradailyVariability(dateTimeEmpty, dataEmpty)
 
     if err == nil {
         t.Error("Expected error : Empty")
@@ -600,7 +603,7 @@ func TestIntradailyVariability(t *testing.T) {
     dataDifferentSize = append(dataDifferentSize, 250.0)
     dataDifferentSize = append(dataDifferentSize, 250.0)
 
-    _, err = chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+    _, err = IntradailyVariability(dateTimeEmpty, dataEmpty)
 
     if err == nil {
         t.Error("Expected error : DifferentSize")
@@ -620,7 +623,7 @@ func TestIntradailyVariability(t *testing.T) {
     dataLess2Hours = append(dataLess2Hours, 250.0)
     dataLess2Hours = append(dataLess2Hours, 250.0)
 
-    _, err = chronobiology.IntradailyVariability(dateTimeEmpty, dataEmpty)
+    _, err = IntradailyVariability(dateTimeEmpty, dataEmpty)
 
     if err == nil {
         t.Error("Expected error : LessThan2Hours")
@@ -650,7 +653,7 @@ func TestIntradailyVariability(t *testing.T) {
         tempDateTime   = tempDateTime.Add(60 * time.Second)
     }
 
-    dateTime30secs, data30secs, err := chronobiology.ConvertDataBasedOnEpoch(dateTime60secs, data60secs, 30)
+    dateTime30secs, data30secs, err := ConvertDataBasedOnEpoch(dateTime60secs, data60secs, 30)
 
     // Table tests
     var tTests = []struct {
@@ -665,7 +668,7 @@ func TestIntradailyVariability(t *testing.T) {
 
     // Test with all values in the table
     for _, table := range tTests {
-        iv, err := chronobiology.IntradailyVariability(table.dateTime, table.data)
+        iv, err := IntradailyVariability(table.dateTime, table.data)
 
         if err != nil {
             t.Error("Expected error = nil.")
@@ -696,7 +699,7 @@ func TestAverageDay(t *testing.T) {
       var dateTimeInvalid []time.Time
       var dataInvalid []float64
 
-      _, _, err := chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+      _, _, err := AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -704,7 +707,7 @@ func TestAverageDay(t *testing.T) {
 
       dataInvalid = append(dataInvalid, 35.50)
 
-      _, _, err = chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+      _, _, err = AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -718,7 +721,7 @@ func TestAverageDay(t *testing.T) {
           dataInvalid = append(dataInvalid, 35.50)
       }
 
-      _, _, err = chronobiology.AverageDay(dateTimeInvalid, dataInvalid)
+      _, _, err = AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -801,7 +804,7 @@ func TestAverageDay(t *testing.T) {
 
       // Test with all values in the table
       for _, table := range tTests {
-          newDateTime, newData, err := chronobiology.AverageDay(table.dateTime, table.data)
+          newDateTime, newData, err := AverageDay(table.dateTime, table.data)
 
           if err != nil {
               t.Error("Expected error = nil.")
@@ -833,7 +836,7 @@ func TestFilterDataByDateTime(t *testing.T) {
       endTimeInvalid   := time.Date(2015,1,2,0,0,0,0,utc)
 
       // Empty slices
-      _, _, err := chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+      _, _, err := FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -842,7 +845,7 @@ func TestFilterDataByDateTime(t *testing.T) {
       dataInvalid = append(dataInvalid, 35.50)
 
       // Different sizes
-      _, _, err = chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+      _, _, err = FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -853,7 +856,7 @@ func TestFilterDataByDateTime(t *testing.T) {
       endTimeInvalid   = time.Date(2014,1,1,0,0,0,0,utc)
 
       // Invalid time range
-      _, _, err = chronobiology.FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
+      _, _, err = FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -926,7 +929,7 @@ func TestFilterDataByDateTime(t *testing.T) {
 
       // Test with all values in the table
       for _, table := range tTests {
-          newDateTime, newData, err := chronobiology.FilterDataByDateTime(table.dateTime, table.data, table.startTime, table.endTime)
+          newDateTime, newData, err := FilterDataByDateTime(table.dateTime, table.data, table.startTime, table.endTime)
 
           if err != nil {
               t.Error("Expected error = nil.")
@@ -956,7 +959,7 @@ func TestFillGapsInData(t *testing.T) {
       var dataInvalid []float64
 
       // Empty slices
-      _, _, err := chronobiology.FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
+      _, _, err := FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -965,7 +968,7 @@ func TestFillGapsInData(t *testing.T) {
       dataInvalid = append(dataInvalid, 35.50)
 
       // Different sizes
-      _, _, err = chronobiology.FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
+      _, _, err = FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
 
       if err == nil {
           t.Error("Expected error != nil.")
@@ -1052,7 +1055,7 @@ func TestFillGapsInData(t *testing.T) {
 
       // Test with all values in the table
       for _, table := range tTests {
-          newDateTime, newData, err := chronobiology.FillGapsInData(table.dateTime, table.data, table.value)
+          newDateTime, newData, err := FillGapsInData(table.dateTime, table.data, table.value)
 
           if err != nil {
               t.Error("Expected error = nil.")

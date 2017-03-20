@@ -71,7 +71,7 @@ func secondsTo(date1 time.Time, date2 time.Time) (int) {
 
 // Compares two float values using a predetermined epsilon
 func floatEquals(a, b float64) bool {
-    var epsilon float64 = 0.00000001
+    var epsilon float64 = 0.000000001
     if ((a - b) < epsilon && (b - a) < epsilon) {
         return true
     }
@@ -179,7 +179,7 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
 /* END INTERNAL FUNCTIONS */
 
 // Calculates the average of a float64 slice
-func Average(data []float64) (float64) {
+func average(data []float64) (float64) {
     var average float64
     if len(data) == 0 {
       return average
@@ -363,7 +363,7 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
 
         if len(tempData) > 0 {
 
-            average := Average(tempData)
+            average := average(tempData)
 
             // Calculates the numerator
             var numerator float64
@@ -570,7 +570,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
             //p := 1440 / isIndex
 
             // Calculate the new average (Xm)
-            average := Average(temporaryData)
+            average := average(temporaryData)
 
             numerator   := 0.0
             denominator := 0.0
