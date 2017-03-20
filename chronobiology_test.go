@@ -39,6 +39,26 @@ func sliceFloatEquals(slice1 []float64, slice2 []float64) (bool) {
 
 /* ################# */
 
+func TestFindMaxPosition(t *testing.T) {
+    var data []int
+
+    max := findMaxPosition(data)
+    if max != -1 {
+        t.Error("Expect: -1")
+    }
+
+    data = append(data, 2)
+    data = append(data, 1)
+    data = append(data, 3)
+    data = append(data, 0)
+    data = append(data, 5)
+
+    max = findMaxPosition(data)
+    if max != 4 {
+        t.Error("Expect: 4")
+    }
+}
+
 func TestAverage(t *testing.T) {
     var data []float64
 
