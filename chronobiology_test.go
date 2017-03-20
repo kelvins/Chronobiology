@@ -288,6 +288,62 @@ func TestLowerActivity(t *testing.T) {
         myData = append(myData, float64((12*60)-index))
     }
 
+    // Tests with invalid parameters
+
+    // Hours = 0
+    _, _, err := LowerActivity(0, myDateTime, myData)
+
+    if err == nil {
+        t.Error(
+            "For: Hours 0 - ",
+            "Expect: InvalidHours",
+        )
+    }
+
+    var emptyDate []time.Time
+    var emptyData []float64
+
+    // Empty date
+    _, _, err = LowerActivity(2, emptyDate, myData)
+
+    if err == nil {
+        t.Error(
+            "For: EmptyDate - ",
+            "Expect: Empty",
+        )
+    }
+
+    // Empty data
+    _, _, err = LowerActivity(2, myDateTime, emptyData)
+
+    if err == nil {
+        t.Error(
+            "For: EmptyData - ",
+            "Expect: Empty",
+        )
+    }
+
+    // len(dateTime) != len(data)
+    emptyData = append(emptyData, 35.5)
+
+    _, _, err = LowerActivity(2, myDateTime, emptyData)
+
+    if err == nil {
+        t.Error(
+            "Expect: DifferentSize",
+        )
+    }
+
+    // Invalid hours
+    _, _, err = LowerActivity(48, myDateTime, myData)
+
+    if err == nil {
+        t.Error(
+            "For: Hours 48 - ",
+            "Expect: HoursHigher",
+        )
+    }
+
     // Test with all values in the table
     for _, pair := range tTests {
         lowerActivity, onsetLowerActivity, err := LowerActivity(pair.hours, myDateTime, myData)
