@@ -2,6 +2,7 @@ Chronobiology GoLang Package
 ==========================
 
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Build Status](https://travis-ci.org/kelvins/chronobiology.svg?branch=master)](https://travis-ci.org/kelvins/chronobiology)
 
 This is an open source package developed to provide **chronobiology** functions in **GoLang**.
 
