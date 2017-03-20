@@ -4,8 +4,8 @@ package chronobiology
 
 import (
     "time"
-    "errors"
     "math"
+    "errors"
 )
 
 /* BEGIN INTERNAL FUNCTIONS */
@@ -81,6 +81,7 @@ func secondsTo(date1 time.Time, date2 time.Time) (int) {
     return int(seconds)
 }
 
+// Compares two float values using a predetermined epsilon
 func floatEquals(a, b float64) bool {
     var epsilon float64 = 0.00000001
     if ((a - b) < epsilon && (b - a) < epsilon) {
@@ -661,7 +662,7 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
     return
 }
 
-// Creates an average day based on the time series
+// Creates an average day based on the time series.
 func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, newData []float64, err error) {
 
     // Check the parameters

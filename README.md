@@ -11,8 +11,6 @@ GoLang
 
 The Go programming language was developed by **Google** and released in 2009. To know more about the **GoLang** please visit the official [web site][1].
 
-![](https://www.gopheracademy.com/images/cowboy-color.png)
-
 ----------
 
 Chronobiology
@@ -39,9 +37,8 @@ Some analyzes and features that we pretend to provide with the package:
 - [X] Relative Amplitude (RA)
 - [X] Intradaily Variability (IV)
 - [ ] Interdaily Stability (IS)
-- [ ] Chi Square Periodogram
 
-Some functions we provide in version 1.1:
+Some functions we provide in version 1.2:
 
 ``` go
 // Convert the data and dateTime slices to the new epoch passed by parameter
