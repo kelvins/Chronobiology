@@ -6,6 +6,10 @@ Chronobiology GoLang Package
 
 This is an open source package developed to provide **chronobiology** functions in **GoLang**.
 
+You can use go get command:
+
+    go get github.com/kelvins/chronobiology
+
 ----------
 
 GoLang
