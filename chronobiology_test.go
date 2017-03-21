@@ -1231,3 +1231,74 @@ func TestFillGapsInData(t *testing.T) {
         }
     }
 }
+
+func TestInterdailyStability(t *testing.T) {
+
+    utc, _ := time.LoadLocation("UTC")
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    // Test with invalid parameters
+
+    var dateTimeInvalid []time.Time
+    var dataInvalid []float64
+
+    _, err := InterdailyStability(dateTimeInvalid, dataInvalid)
+
+    if err == nil {
+        t.Error(
+            "Expected: Empty",
+        )
+    }
+
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dataInvalid = append(dataInvalid, 15.5)
+    dataInvalid = append(dataInvalid, 18.1)
+
+    _, err = InterdailyStability(dateTimeInvalid, dataInvalid)
+
+    if err == nil {
+        t.Error(
+            "Expected: DifferentSize",
+        )
+    }
+
+    dateTimeInvalid = nil
+    dataInvalid = nil
+
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,2,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,4,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,6,0,0,0,utc))
+    dataInvalid = append(dataInvalid, 15.5)
+    dataInvalid = append(dataInvalid, 18.1)
+    dataInvalid = append(dataInvalid, 17.1)
+    dataInvalid = append(dataInvalid, 16.1)
+
+    _, err = InterdailyStability(dateTimeInvalid, dataInvalid)
+
+    if err == nil {
+        t.Error(
+            "Expected: LessThan2Days",
+        )
+    }
+
+    dateTimeInvalid = nil
+    dataInvalid = nil
+
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,5,6,0,0,0,utc))
+    dataInvalid = append(dataInvalid, 15.5)
+    dataInvalid = append(dataInvalid, 18.1)
+    dataInvalid = append(dataInvalid, 17.1)
+    dataInvalid = append(dataInvalid, 16.1)
+
+    _, err = InterdailyStability(dateTimeInvalid, dataInvalid)
+
+    if err == nil {
+        t.Error(
+            "Expected: InvalidEpoch",
+        )
+    }
+}
