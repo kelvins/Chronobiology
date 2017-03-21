@@ -48,7 +48,7 @@ Some analyzes and features that we pretend to provide with the package:
 - [X] Intradaily Variability (IV)
 - [ ] Interdaily Stability (IS)
 
-Some functions we provide in version 1.2:
+Functions provided in the version 1.2:
 
 ``` go
 // Convert the data and dateTime slices to the new epoch passed by parameter
