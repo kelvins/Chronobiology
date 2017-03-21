@@ -835,17 +835,20 @@ func TestAverageDay(t *testing.T) {
       _, _, err := AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: Empty")
       }
 
+      dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+      dataInvalid = append(dataInvalid, 35.50)
       dataInvalid = append(dataInvalid, 35.50)
 
       _, _, err = AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: DifferentSize")
       }
 
+      dateTimeInvalid = nil
       dataInvalid = nil
 
       for index := 0; index < 20; index++ {
@@ -857,7 +860,21 @@ func TestAverageDay(t *testing.T) {
       _, _, err = AverageDay(dateTimeInvalid, dataInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: LessThan2Days")
+      }
+
+      dateTimeInvalid = nil
+      dataInvalid = nil
+
+      dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+      dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+      dataInvalid = append(dataInvalid, 35.50)
+      dataInvalid = append(dataInvalid, 35.50)
+
+      _, _, err = AverageDay(dateTimeInvalid, dataInvalid)
+
+      if err == nil {
+          t.Error("Expected error: InvalidEpoch")
       }
 
       /* Test with valid parameters */
