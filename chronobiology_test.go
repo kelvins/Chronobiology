@@ -586,6 +586,25 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
         t.Error("Expect error DifferentSize")
     }
 
+    // Reset the slices
+    dateTimeInvalid = nil
+    dataInvalid = nil
+
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+    dateTimeInvalid = append(dateTimeInvalid, time.Date(2015,1,1,0,0,0,0,utc))
+
+    dataInvalid = append(dataInvalid, 123.0)
+    dataInvalid = append(dataInvalid, 456.0)
+    dataInvalid = append(dataInvalid, 789.0)
+
+    // Invalid current epoch
+    _, _, err = ConvertDataBasedOnEpoch(dateTimeInvalid, dataInvalid, 10)
+
+    if err == nil {
+        t.Error("Expected: InvalidEpoch")
+    }
+
     var dateTime60secs []time.Time
     var data60secs []float64
 
@@ -649,6 +668,13 @@ func TestConvertDataBasedOnEpoch(t *testing.T) {
         tempDateTime       = tempDateTime.Add(240 * time.Second)
         newDateTime240secs = append(newDateTime240secs, tempDateTime)
         newData240secs     = append(newData240secs, 250.0)
+    }
+
+    // Invalid new epoch
+    _, _, err = ConvertDataBasedOnEpoch(newDateTime240secs, newData240secs, 0)
+
+    if err == nil {
+        t.Error("Expected: InvalidEpoch")
     }
 
     // Table tests
