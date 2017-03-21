@@ -721,7 +721,7 @@ func TestIntradailyVariability(t *testing.T) {
     _, err := IntradailyVariability(dateTimeEmpty, dataEmpty)
 
     if err == nil {
-        t.Error("Expected error : Empty")
+        t.Error("Expected error: Empty")
     }
 
     var dateTimeDifferentSize []time.Time
@@ -736,10 +736,10 @@ func TestIntradailyVariability(t *testing.T) {
     dataDifferentSize = append(dataDifferentSize, 250.0)
     dataDifferentSize = append(dataDifferentSize, 250.0)
 
-    _, err = IntradailyVariability(dateTimeEmpty, dataEmpty)
+    _, err = IntradailyVariability(dateTimeDifferentSize, dataDifferentSize)
 
     if err == nil {
-        t.Error("Expected error : DifferentSize")
+        t.Error("Expected error: DifferentSize")
     }
 
     var dateTimeLess2Hours []time.Time
@@ -756,10 +756,10 @@ func TestIntradailyVariability(t *testing.T) {
     dataLess2Hours = append(dataLess2Hours, 250.0)
     dataLess2Hours = append(dataLess2Hours, 250.0)
 
-    _, err = IntradailyVariability(dateTimeEmpty, dataEmpty)
+    _, err = IntradailyVariability(dateTimeLess2Hours, dataLess2Hours)
 
     if err == nil {
-        t.Error("Expected error : LessThan2Hours")
+        t.Error("Expected error: LessThan2Hours")
     }
 
     var dateTime60secs []time.Time
