@@ -972,17 +972,25 @@ func TestFilterDataByDateTime(t *testing.T) {
       _, _, err := FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: Empty")
       }
 
+      dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+
       dataInvalid = append(dataInvalid, 35.50)
+      dataInvalid = append(dataInvalid, 36.50)
 
       // Different sizes
       _, _, err = FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: DifferentSize")
       }
+
+      dateTimeInvalid = nil
+      dataInvalid = nil
+
+      dataInvalid = append(dataInvalid, 35.50)
 
       dateTimeInvalid  = append(dateTimeInvalid, startTimeInvalid)
       startTimeInvalid = time.Date(2015,1,1,0,0,0,0,utc)
@@ -992,7 +1000,7 @@ func TestFilterDataByDateTime(t *testing.T) {
       _, _, err = FilterDataByDateTime(dateTimeInvalid, dataInvalid, startTimeInvalid, endTimeInvalid)
 
       if err == nil {
-          t.Error("Expected error != nil.")
+          t.Error("Expected error: InvalidTimeRange")
       }
 
       /* Test with valid parameters */
