@@ -94,7 +94,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
 
 ----------
 
-Please, feel free to contribute in any way.
+This project was created under the MIT license. Feel free to contribute by commenting, suggesting, creating issues or sending pull requests.
 
 If you want more information about this project please contact-me: kelvinpfw@hotmail.com
 
