@@ -674,16 +674,17 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
         err = errors.New("DifferentSize")
         return
     }
-    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
-        err = errors.New("LessThan2Days")
-        return
-    }
 
     currentEpoch := FindEpoch(dateTime)
 
     // Could not find the epoch
     if currentEpoch == 0 {
         err = errors.New("InvalidEpoch")
+        return
+    }
+    
+    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
+        err = errors.New("LessThan2Days")
         return
     }
 
