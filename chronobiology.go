@@ -139,6 +139,10 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
         err = errors.New("DifferentSize")
         return
     }
+    if minutes <= 0 {
+        err = errors.New("MinutesInvalid")
+        return
+    }
 
     // If the minute is equal to 1, just return the original slices
     if minutes == 1 {
@@ -159,10 +163,12 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
         }
     }
 
-    count := 0
-    tempData   := 0.0
     // "Normalize" the data based on the minutes passed as parameter
     for index := 0; index < lastValidIndex; index += minutes {
+    
+        tempData := 0.0
+        count := 0
+
         for tempIndex := index; tempIndex < index+minutes; tempIndex++ {
             tempData += data[tempIndex]
             count++
@@ -682,7 +688,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
         err = errors.New("InvalidEpoch")
         return
     }
-    
+
     if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
         err = errors.New("LessThan2Days")
         return
