@@ -1143,16 +1143,35 @@ func TestFillGapsInData(t *testing.T) {
     _, _, err := FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
 
     if err == nil {
-        t.Error("Expected error != nil.")
+        t.Error("Expected: Empty")
     }
 
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
     dataInvalid = append(dataInvalid, 35.50)
+    dataInvalid = append(dataInvalid, 40.50)
 
     // Different sizes
     _, _, err = FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
 
     if err == nil {
-        t.Error("Expected error != nil.")
+        t.Error("Expected: DifferentSize")
+    }
+
+    dateTimeInvalid = nil
+    dataInvalid = nil
+
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dataInvalid = append(dataInvalid, 10.00)
+    dataInvalid = append(dataInvalid, 10.00)
+    dataInvalid = append(dataInvalid, 10.00)
+
+    // Invalid epoch
+    _, _, err = FillGapsInData(dateTimeInvalid, dataInvalid, 0.0)
+
+    if err == nil {
+        t.Error("Expected: InvalidEpoch")
     }
 
     /* Test with valid parameters */
