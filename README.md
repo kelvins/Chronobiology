@@ -46,7 +46,7 @@ Some analyzes and features that we pretend to provide with the package:
 - [X] The followed hours of lowest activity (e.g. L5)
 - [X] Relative Amplitude (RA)
 - [X] Intradaily Variability (IV)
-- [ ] Interdaily Stability (IS)
+- [X] Interdaily Stability (IS)
 
 Functions provided in the version 1.2:
 
