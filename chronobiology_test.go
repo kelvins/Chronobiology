@@ -742,6 +742,29 @@ func TestIntradailyVariability(t *testing.T) {
         t.Error("Expected error: DifferentSize")
     }
 
+    // Cannot find the correct epoch
+    var dateTimeInvalidEpoch []time.Time
+    var dataInvalidEpoch []float64
+
+    dateTimeInvalidEpoch = append(dateTimeInvalidEpoch, tempDateTime)
+    dateTimeInvalidEpoch = append(dateTimeInvalidEpoch, tempDateTime)
+    dateTimeInvalidEpoch = append(dateTimeInvalidEpoch, tempDateTime)
+    dateTimeInvalidEpoch = append(dateTimeInvalidEpoch, tempDateTime)
+    tempDateTime         = tempDateTime.Add(3 * time.Hour)
+    dateTimeInvalidEpoch = append(dateTimeInvalidEpoch, tempDateTime)
+
+    dataInvalidEpoch = append(dataInvalidEpoch, 100.0)
+    dataInvalidEpoch = append(dataInvalidEpoch, 200.0)
+    dataInvalidEpoch = append(dataInvalidEpoch, 300.0)
+    dataInvalidEpoch = append(dataInvalidEpoch, 400.0)
+    dataInvalidEpoch = append(dataInvalidEpoch, 500.0)
+
+    _, err = IntradailyVariability(dateTimeInvalidEpoch, dataInvalidEpoch)
+
+    if err == nil {
+        t.Error("Expected error: ConvertDataBasedOnEpoch error")
+    }
+
     var dateTimeLess2Hours []time.Time
     var dataLess2Hours []float64
 
@@ -1229,6 +1252,108 @@ func TestFillGapsInData(t *testing.T) {
                 )
             }
         }
+    }
+}
+
+func TestNormalizeDataIS(t *testing.T) {
+    utc, _ := time.LoadLocation("UTC")
+    tempDateTime := time.Date(2015,1,1,0,0,0,0,utc)
+
+    // Test with invalid parameters
+
+    var dateTimeInvalid []time.Time
+    var dataInvalid []float64
+
+    _, _, err := normalizeDataIS(dateTimeInvalid, dataInvalid, 1)
+
+    if err == nil {
+        t.Error(
+            "Expected: Empty",
+        )
+    }
+
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+    dataInvalid = append(dataInvalid, 15.5)
+    dataInvalid = append(dataInvalid, 18.1)
+
+    _, _, err = normalizeDataIS(dateTimeInvalid, dataInvalid, 1)
+
+    if err == nil {
+        t.Error(
+            "Expected: DifferentSize",
+        )
+    }
+
+    dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
+
+    _, _, err = normalizeDataIS(dateTimeInvalid, dataInvalid, 0)
+
+    if err == nil {
+        t.Error(
+            "Expected: MinutesInvalid",
+        )
+    }
+
+    dateTimeReturned, dataReturned, err := normalizeDataIS(dateTimeInvalid, dataInvalid, 1)
+
+    if err != nil {
+        t.Error(
+            "Expected no errors",
+        )
+    }
+
+    if !sliceTimeEquals(dateTimeReturned, dateTimeInvalid) {
+        t.Error(
+            "Different DateTime Slices.",
+        )
+    }
+
+    if !sliceFloatEquals(dataReturned, dataInvalid) {
+        t.Error(
+            "Different Data Slices.",
+        )
+    }
+
+    // Test with valid parameters
+
+    var dateTime []time.Time
+    var data []float64
+
+    for index := 0; index < 2880; index++ {
+        dateTime = append(dateTime, tempDateTime)
+        data     = append(data, 100.00)
+        tempDateTime = tempDateTime.Add(1 * time.Minute)
+    }
+
+    tempDateTime = time.Date(2015,1,1,0,0,0,0,utc)
+
+    var expectedDateTime []time.Time
+    var expectedData []float64
+
+    for index := 0; index < 1440; index++ {
+        expectedDateTime = append(expectedDateTime, tempDateTime)
+        expectedData     = append(expectedData, 100.00)
+        tempDateTime     = tempDateTime.Add(2 * time.Minute)
+    }
+
+    dateTimeReturned, dataReturned, err = normalizeDataIS(dateTime, data, 2)
+
+    if err != nil {
+        t.Error(
+            "Expected no errors",
+        )
+    }
+
+    if !sliceTimeEquals(dateTimeReturned, expectedDateTime) {
+        t.Error(
+            "Different DateTime Slices.",
+        )
+    }
+
+    if !sliceFloatEquals(dataReturned, expectedData) {
+        t.Error(
+            "Different Data Slices.",
+        )
     }
 }
 
