@@ -544,15 +544,10 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
     }
 
     if currentEpoch != 60 {
-        newDateTime, newData, convertError := ConvertDataBasedOnEpoch(dateTime, data, 60)
+        newDateTime, newData, _ := ConvertDataBasedOnEpoch(dateTime, data, 60)
 
         dateTime = newDateTime
         data     = newData
-
-        if convertError != nil {
-            err = errors.New("ErrorConvertingData")
-            return
-        }
     }
 
     // The zero position is allocated to store the average value of the IS vector
