@@ -165,7 +165,7 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
 
     // "Normalize" the data based on the minutes passed as parameter
     for index := 0; index < lastValidIndex; index += minutes {
-    
+
         tempData := 0.0
         count := 0
 
@@ -363,8 +363,7 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
 
         if err != nil {
             err = errors.New("ConvertDataBasedOnEpoch error")
-            iv = nil
-            return iv, err
+            return nil, err
         }
 
         if len(tempData) > 0 {
@@ -452,7 +451,7 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
         return
     }
 
-    currentEpoch  := FindEpoch(dateTime)
+    currentEpoch := FindEpoch(dateTime)
 
     // Could not find the epoch
     if currentEpoch == 0 {
