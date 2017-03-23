@@ -34,7 +34,7 @@ Chronobiological studies include but are not limited to comparative anatomy, phy
 
 The project
 ---------------------------------
-The **objective** of this project is to provide a easy way to access **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
+The **objective** of this project is to provide a easy way to access some **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
 Some analyzes and features that we pretend to provide with the package:
 
@@ -88,13 +88,13 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
 func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, newData []float64, err error) {}
 ```
 
-**Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
+**Note**: The functions were developed to work with default epoch of 60 seconds (or a divisible or multiple of 60, e.g.: 15, 30, 120). The results can be inaccurate if you use another epoch, for example 17 or 33 seconds.
 
 **References**: Witting W, Kwa IH, Eikelenboom P, Mirmiran M, Swaab DF. Alterations in the circadian rest-activity rhythm in aging and Alzheimer's disease. Biol Psychiatry 1990;27:563-72. ([https://www.ncbi.nlm.nih.gov/pubmed/2322616][2])
 
 ----------
 
-This project was created under the MIT license. Feel free to contribute by commenting, suggesting, creating issues or sending pull requests.
+This project was created under the **MIT license**. Feel free to contribute by commenting, suggesting, creating issues or sending pull requests. Any help is welcome.
 
 If you want more information about this project please contact-me: kelvinpfw@hotmail.com
 
