@@ -90,7 +90,7 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
 
 **Note**: The functions were developed to work with default epoch of 60 seconds (or 15, 30, 120 seconds). If the epoch is something like 17 or 33 seconds, the results can be inaccurate.
 
-**References**: Witting W, Kwa IH, Eikelenboom P, Mirmiran M, Swaab DF. Alterations in the circadian rest-activity rhythm in aging and Alzheimer's disease. Biol Psychiatry 1990;27:563-72.
+**References**: Witting W, Kwa IH, Eikelenboom P, Mirmiran M, Swaab DF. Alterations in the circadian rest-activity rhythm in aging and Alzheimer's disease. Biol Psychiatry 1990;27:563-72. ([https://www.ncbi.nlm.nih.gov/pubmed/2322616][2])
 
 ----------
 
@@ -99,3 +99,4 @@ This project was created under the MIT license. Feel free to contribute by comme
 If you want more information about this project please contact-me: kelvinpfw@hotmail.com
 
   [1]: https://golang.org
+  [2]: https://www.ncbi.nlm.nih.gov/pubmed/2322616
