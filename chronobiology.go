@@ -151,10 +151,7 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
         return
     }
 
-    // Store the first DateTime
-    currentDateTime := dateTime[0]
-
-    // Gets the last valid position according to the minutes passed by parameter
+    // Get the last valid position according to the minutes passed by parameter
     lastValidIndex := -1
     for index := len(dateTime); index > 0; index-- {
         if index % minutes == 0 {
@@ -162,6 +159,9 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
             break
         }
     }
+
+    // Store the first DateTime
+    currentDateTime := dateTime[0]
 
     // "Normalize" the data based on the minutes passed as parameter
     for index := 0; index < lastValidIndex; index += minutes {
@@ -174,9 +174,9 @@ func normalizeDataIS(dateTime []time.Time, data []float64, minutes int)(temporar
             count++
         }
 
+        currentDateTime   = currentDateTime.Add(time.Duration(minutes) * time.Minute)
         temporaryDateTime = append(temporaryDateTime, currentDateTime)
         temporaryData     = append(temporaryData, (tempData/float64(count)))
-        currentDateTime   = currentDateTime.Add(time.Duration(minutes) * time.Minute)
     }
 
     return
@@ -550,8 +550,17 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
         data     = newData
     }
 
+    // The data should be divisible by 1440 (entire day)
+    for len(dateTime) % 1440 != 0 {
+        // Remove the last data
+        dateTime = dateTime[:len(dateTime)-1]
+        data     = data[:len(data)-1]
+    }
+
     // The zero position is allocated to store the average value of the IS vector
     is = append(is, 0.0)
+
+    // Calculate all 60 IS values
     for isIndex := 1; isIndex <= 60; isIndex++ {
 
         if 1440 % isIndex == 0 {
@@ -604,7 +613,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
     average := 0.0
     count   := 0
 
-    for index := 0; index < len(is); index++ {
+    for index := 1; index < len(is); index++ {
         if is[index] > -1.0 {
             average += is[index]
             count++
@@ -683,8 +692,8 @@ func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, 
         return
     }
 
-    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (48*60*60) {
-        err = errors.New("LessThan2Days")
+    if secondsTo(dateTime[0], dateTime[len(dateTime)-1]) < (24*60*60) {
+        err = errors.New("LessThan1Day")
         return
     }
 
