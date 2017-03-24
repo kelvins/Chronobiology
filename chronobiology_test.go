@@ -3,6 +3,7 @@ package chronobiology
 
 import (
     "time"
+    "math"
     "testing"
     "reflect"
 )
@@ -1350,9 +1351,9 @@ func TestNormalizeDataIS(t *testing.T) {
     var expectedData []float64
 
     for index := 0; index < 1440; index++ {
+        tempDateTime     = tempDateTime.Add(2 * time.Minute)
         expectedDateTime = append(expectedDateTime, tempDateTime)
         expectedData     = append(expectedData, 100.00)
-        tempDateTime     = tempDateTime.Add(2 * time.Minute)
     }
 
     dateTimeReturned, dataReturned, err = normalizeDataIS(dateTime, data, 2)
@@ -1374,6 +1375,20 @@ func TestNormalizeDataIS(t *testing.T) {
             "Different Data Slices.",
         )
     }
+}
+
+func Round(val float64, roundOn float64, places int ) (newVal float64) {
+  	var round float64
+  	pow := math.Pow(10, float64(places))
+  	digit := pow * val
+  	_, div := math.Modf(digit)
+  	if div >= roundOn {
+  		round = math.Ceil(digit)
+  	} else {
+  		round = math.Floor(digit)
+  	}
+  	newVal = round / pow
+  	return
 }
 
 func TestInterdailyStability(t *testing.T) {
@@ -1444,5 +1459,59 @@ func TestInterdailyStability(t *testing.T) {
         t.Error(
             "Expected: InvalidEpoch",
         )
+    }
+
+    var dateTime []time.Time
+    var data []float64
+
+    tempDateTime = time.Date(2015,1,1,0,0,50,0,utc)
+    value := 100.0
+    // 01/01/2015 00:00:50 - 03/01/2015 00:00:50
+    for index := 0; index < 2881; index++ {
+        dateTime = append(dateTime, tempDateTime)
+        switch {
+        case index < 360:
+            value = 100
+        case index < 720:
+            value = 200
+        case index < 1080:
+            value = 300
+        case index < 1440:
+            value = 400
+        case index < 1800:
+            value = 500
+        case index < 2160:
+            value = 600
+        case index < 2520:
+            value = 700
+        case index < 2880:
+            value = 800
+        }
+        data = append(data, value)
+        tempDateTime = tempDateTime.Add(1 * time.Minute)
+    }
+
+    is, _ := InterdailyStability(dateTime, data)
+
+    // Table tests
+    var tTests = []struct {
+        index int
+        result float64
+    }{
+        {  0, 0.2379 },
+        {  1, 0.2381 },
+        {  2, 0.2381 },
+        { 16, 0.2373 },
+        { 60, 0.2381 },
+    }
+
+    // Test with all values in the table
+    for _, table := range tTests {
+        if Round(is[table.index], .5, 4) != table.result {
+            t.Error(
+                "Expected: IS[", table.index, "] = ", table.result,
+                "Received: IS[", table.index, "] = ", Round(is[table.index], .5, 4),
+            )
+        }
     }
 }
