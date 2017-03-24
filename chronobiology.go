@@ -620,7 +620,11 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
         }
     }
 
-    is[0] = average/float64(count)
+    if count > 0 {
+        is[0] = average/float64(count)
+    } else {
+        is[0] = -1.0
+    }
 
     return
 }
