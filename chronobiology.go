@@ -236,10 +236,6 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
             count += 1
             tempIndex += 1
 
-            if tempIndex >= len(dateTime) {
-                break
-            }
-
             tempDateTime = dateTime[tempIndex]
         }
 
@@ -295,10 +291,6 @@ func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivi
               currentActivity += data[tempIndex]
               count += 1
               tempIndex += 1
-
-              if tempIndex >= len(dateTime) {
-                  break
-              }
 
               tempDateTime = dateTime[tempIndex]
           }
