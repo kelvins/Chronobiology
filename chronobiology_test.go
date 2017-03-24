@@ -1514,4 +1514,80 @@ func TestInterdailyStability(t *testing.T) {
             )
         }
     }
+
+    dateTime = nil
+    data = nil
+
+    tempDateTime = time.Date(2015,1,1,0,0,50,0,utc)
+    // 01/01/2015 00:00:50 - 03/01/2015 00:00:50
+    for index := 0; index < 49; index++ {
+        dateTime = append(dateTime, tempDateTime)
+        switch {
+        case index < 6:
+            value = 100
+        case index < 12:
+            value = 200
+        case index < 18:
+            value = 300
+        case index < 24:
+            value = 400
+        case index < 30:
+            value = 500
+        case index < 36:
+            value = 600
+        case index < 42:
+            value = 700
+        case index < 48:
+            value = 800
+        }
+        data = append(data, value)
+        tempDateTime = tempDateTime.Add(1 * time.Hour)
+    }
+
+    is, err = InterdailyStability(dateTime, data)
+
+    // Test with all values in the table
+    for _, table := range tTests {
+        if Round(is[table.index], .5, 4) != table.result {
+            t.Error(
+                "Expected: IS[", table.index, "] = ", table.result,
+                "Received: IS[", table.index, "] = ", Round(is[table.index], .5, 4),
+            )
+        }
+    }
+
+    dateTime = nil
+    data = nil
+
+    tempDateTime = time.Date(2015,1,1,0,0,50,0,utc)
+    // 01/01/2015 00:00:50 - 03/01/2015 00:00:50
+    for index := 0; index < 49; index++ {
+        dateTime = append(dateTime, tempDateTime)
+        data = append(data, 100)
+        tempDateTime = tempDateTime.Add(1 * time.Hour)
+    }
+
+    is, err = InterdailyStability(dateTime, data)
+
+    // Table tests
+    tTests = []struct {
+        index int
+        result float64
+    }{
+        {  0, -1.0 },
+        {  1, -1.0 },
+        {  2, -1.0 },
+        { 16, -1.0 },
+        { 60, -1.0 },
+    }
+
+    // Test with all values in the table
+    for _, table := range tTests {
+        if Round(is[table.index], .5, 4) != table.result {
+            t.Error(
+                "Expected: IS[", table.index, "] = ", table.result,
+                "Received: IS[", table.index, "] = ", Round(is[table.index], .5, 4),
+            )
+        }
+    }
 }
