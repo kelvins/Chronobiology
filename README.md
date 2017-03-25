@@ -34,7 +34,7 @@ Chronobiological studies include but are not limited to comparative anatomy, phy
 
 The project
 ---------------------------------
-The **objective** of this project is to provide a easy way to access some **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
+The **objective** of this project is to provide an easy way to access some **chronobiology** functions that can perform **data analysis** in **time series** using **GoLang**.
 
 Some analyzes and features that we pretend to provide with the package:
 
@@ -48,7 +48,7 @@ Some analyzes and features that we pretend to provide with the package:
 - [X] Intradaily Variability (IV)
 - [X] Interdaily Stability (IS)
 
-Functions provided in the version 1.3:
+Functions provided in the version 1.5:
 
 ``` go
 // Convert the data and dateTime slices to the new epoch passed by parameter
