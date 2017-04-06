@@ -1,5 +1,4 @@
-
-// Package that provides chronobiology functions to analyse time series data
+// Package chronobiology provides some useful functions to analyse biological rhythms in time series
 package chronobiology
 
 import (
@@ -196,7 +195,7 @@ func average(data []float64) (float64) {
     return average / float64(len(data))
 }
 
-// Function that finds the highest activity average of the followed X hours (defined by parameter)
+// HigherActivity is responsible for find the highest activity average of the followed X hours (defined by parameter)
 func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
 
     // Check the parameters
@@ -250,7 +249,7 @@ func HigherActivity(hours int, dateTime []time.Time, data []float64) (higherActi
     return
 }
 
-// Function that finds the lowest activity average of the followed X hours (defined by parameter)
+// LowerActivity function is responsible for find the lowest activity average of the followed X hours (defined by parameter)
 func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
 
       // Check the parameters
@@ -307,19 +306,19 @@ func LowerActivity(hours int, dateTime []time.Time, data []float64) (lowerActivi
       return
 }
 
-// Function that finds the highest activity average of the followed 10 hours
+// M10 - Function that finds the highest activity average of the followed 10 hours
 func M10(dateTime []time.Time, data []float64) (higherActivity float64, onsetHigherActivity time.Time, err error) {
     higherActivity, onsetHigherActivity, err = HigherActivity(10, dateTime, data)
     return
 }
 
-// Function that finds the lowest activity average of the following 5 hours
+// L5 - Function that finds the lowest activity average of the following 5 hours
 func L5(dateTime []time.Time, data []float64) (lowerActivity float64, onsetLowerActivity time.Time, err error) {
     lowerActivity, onsetLowerActivity, err = LowerActivity(5, dateTime, data)
     return
 }
 
-// Function that calculates the relative amplitude based on the formula (M10-L5)/(M10+L5)
+// RelativeAmplitude is responsible for calculate the relative amplitude based on the formula (M10-L5)/(M10+L5)
 func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float64, err error) {
     if( highestAverage == 0.0 && lowestAverage == 0.0 ) {
         err = errors.New("NullValues")
@@ -331,7 +330,7 @@ func RelativeAmplitude(highestAverage float64, lowestAverage float64) (RA float6
     return
 }
 
-// Function that calculates the intradaily variability
+// IntradailyVariability is responsible for calculate the intradaily variability
 func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, err error) {
 
     if len(dateTime) == 0 || len(data) == 0 {
@@ -397,7 +396,7 @@ func IntradailyVariability(dateTime []time.Time, data []float64) (iv []float64, 
     return
 }
 
-// Function that finds the epoch of a time series (seconds)
+// FindEpoch is used to find the epoch of the time series (in seconds)
 func FindEpoch(dateTime []time.Time) (epoch int) {
 
     if len(dateTime) == 0 {
@@ -426,7 +425,7 @@ func FindEpoch(dateTime []time.Time) (epoch int) {
     return
 }
 
-// Convert the data and dateTime slices to the new epoch passed by parameter
+// ConvertDataBasedOnEpoch convert the data and dateTime slices to the new epoch passed by parameter
 func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int) (newDateTime []time.Time, newData []float64, err error) {
 
     // Check the parameters
@@ -479,7 +478,7 @@ func ConvertDataBasedOnEpoch(dateTime []time.Time, data []float64, newEpoch int)
     return
 }
 
-// Function created to filter the data based on the startTime and endTime passed as parameter
+// FilterDataByDateTime was created to filter the data based on the startTime and endTime passed as parameter
 func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.Time, endTime time.Time) (newDateTime []time.Time, newData []float64, err error) {
 
     // Check the parameters
@@ -510,7 +509,7 @@ func FilterDataByDateTime(dateTime []time.Time, data []float64, startTime time.T
     return
 }
 
-// Function that calculates the interdaily stability
+// InterdailyStability calculates the interdaily stability
 func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, err error) {
 
     // Check the parameters
@@ -621,7 +620,7 @@ func InterdailyStability(dateTime []time.Time, data []float64) (is []float64, er
     return
 }
 
-// Function that searches for gaps in the time series and fills it with a specific value passed as parameter (usually zero)
+// FillGapsInData is responsible for searches for gaps in the time series and fills it with a specific value passed as parameter (usually zero)
 func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDateTime []time.Time, newData []float64, err error) {
 
     // Check the parameters
@@ -667,7 +666,7 @@ func FillGapsInData(dateTime []time.Time, data []float64, value float64) (newDat
     return
 }
 
-// Creates an average day based on the time series.
+// AverageDay creates an average day based on the time series.
 func AverageDay(dateTime []time.Time, data []float64) (newDateTime []time.Time, newData []float64, err error) {
 
     // Check the parameters
