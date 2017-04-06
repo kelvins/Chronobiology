@@ -1543,7 +1543,7 @@ func TestInterdailyStability(t *testing.T) {
 		tempDateTime = tempDateTime.Add(1 * time.Hour)
 	}
 
-	is, err = InterdailyStability(dateTime, data)
+	is, _ = InterdailyStability(dateTime, data)
 
 	// Test with all values in the table
 	for _, table := range tTests {
