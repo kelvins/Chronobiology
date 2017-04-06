@@ -4,6 +4,7 @@ Chronobiology GoLang Package
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/kelvins/chronobiology.svg?branch=master)](https://travis-ci.org/kelvins/chronobiology)
 [![Coverage Status](https://coveralls.io/repos/github/kelvins/chronobiology/badge.svg?branch=master)](https://coveralls.io/github/kelvins/chronobiology?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kelvins/chronobiology)](https://goreportcard.com/report/github.com/kelvins/chronobiology)
 
 This is an open source package developed to provide **chronobiology** functions in **GoLang**.
 
