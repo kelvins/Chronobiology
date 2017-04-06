@@ -4,6 +4,7 @@ import (
 	"math"
 	"reflect"
 	"testing"
+  "errors"
 	"time"
 )
 
@@ -848,151 +849,118 @@ func TestIntradailyVariability(t *testing.T) {
 func TestAverageDay(t *testing.T) {
 
 	utc, _ := time.LoadLocation("UTC")
-	tempDateTime := time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+	currentDateTime := time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-	/* Test with invalid parameters */
-
-	var dateTimeInvalid []time.Time
-	var dataInvalid []float64
-
-	_, _, err := AverageDay(dateTimeInvalid, dataInvalid)
-
-	if err == nil {
-		t.Error("Expected error: Empty")
-	}
-
-	dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
-	dataInvalid = append(dataInvalid, 35.50)
-	dataInvalid = append(dataInvalid, 35.50)
-
-	_, _, err = AverageDay(dateTimeInvalid, dataInvalid)
-
-	if err == nil {
-		t.Error("Expected error: DifferentSize")
-	}
-
-	dateTimeInvalid = nil
-	dataInvalid = nil
+  var tempDateTime []time.Time
+	var tempData []float64
 
 	for index := 0; index < 20; index++ {
-		dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
-		tempDateTime = tempDateTime.Add(1 * time.Hour)
-		dataInvalid = append(dataInvalid, 35.50)
+		tempDateTime    = append(tempDateTime, currentDateTime)
+		tempData        = append(tempData, 35.50)
+		currentDateTime = currentDateTime.Add(1 * time.Hour)
 	}
 
-	_, _, err = AverageDay(dateTimeInvalid, dataInvalid)
+  /* Test 1 */
 
-	if err == nil {
-		t.Error("Expected error: LessThan2Days")
-	}
+  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-	dateTimeInvalid = nil
-	dataInvalid = nil
+  var dateTime1 []time.Time
+  var data1 []float64
 
-	dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
-	dateTimeInvalid = append(dateTimeInvalid, tempDateTime)
-	dataInvalid = append(dataInvalid, 35.50)
-	dataInvalid = append(dataInvalid, 35.50)
+  for index := 0; index < 72; index++ {
+    dateTime1 = append(dateTime1, currentDateTime)
+    currentDateTime = currentDateTime.Add(1 * time.Hour)
 
-	_, _, err = AverageDay(dateTimeInvalid, dataInvalid)
+    if index < 24 {
+      data1 = append(data1, 45.50)
+    } else if index < 48 {
+      data1 = append(data1, 102.50)
+    } else {
+      data1 = append(data1, 86.50)
+    }
+  }
 
-	if err == nil {
-		t.Error("Expected error: InvalidEpoch")
-	}
+  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-	/* Test with valid parameters */
+  var newDateTime1 []time.Time
+  var newData1 []float64
 
-	/* Test 1 */
+  for index := 0; index < 24; index++ {
+    newDateTime1 = append(newDateTime1, currentDateTime)
+    currentDateTime = currentDateTime.Add(1 * time.Hour)
+    newData1 = append(newData1, 78.1667)
+  }
 
-	tempDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+  /* Test 2 */
 
-	var dateTime1 []time.Time
-	var data1 []float64
+  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-	for index := 0; index < 72; index++ {
-		dateTime1 = append(dateTime1, tempDateTime)
-		tempDateTime = tempDateTime.Add(1 * time.Hour)
+  var dateTime2 []time.Time
+  var data2 []float64
 
-		if index < 24 {
-			data1 = append(data1, 45.50)
-		} else if index < 48 {
-			data1 = append(data1, 102.50)
-		} else {
-			data1 = append(data1, 86.50)
-		}
-	}
+  for index := 0; index < 60; index++ {
+    dateTime2 = append(dateTime2, currentDateTime)
+    currentDateTime = currentDateTime.Add(1 * time.Hour)
 
-	tempDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+    if index < 24 {
+      data2 = append(data2, 50.00)
+    } else if index < 48 {
+      data2 = append(data2, 150.00)
+    } else {
+      data2 = append(data2, 100.00)
+    }
+  }
 
-	var newDateTime1 []time.Time
-	var newData1 []float64
+  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-	for index := 0; index < 24; index++ {
-		newDateTime1 = append(newDateTime1, tempDateTime)
-		tempDateTime = tempDateTime.Add(1 * time.Hour)
-		newData1 = append(newData1, 78.1667)
-	}
+  var newDateTime2 []time.Time
+  var newData2 []float64
 
-	/* Test 2 */
+  for index := 0; index < 24; index++ {
+    newDateTime2 = append(newDateTime2, currentDateTime)
+    currentDateTime = currentDateTime.Add(1 * time.Hour)
+    newData2 = append(newData2, 100.00)
+  }
 
-	tempDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+  // Table tests
+  var tTests = []struct {
+    dateTime    []time.Time
+    data        []float64
+    newDateTime []time.Time
+    newData     []float64
+    err         error
+  }{
+    {nil, nil, nil, nil, errors.New("Empty")},
+    {tempDateTime, tempData, nil, nil, errors.New("LessThan1Day")},
+    {[]time.Time{currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("DifferentSize")},
+    {[]time.Time{currentDateTime, currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("InvalidEpoch")},
+    {dateTime1, data1, newDateTime1, newData1, nil},
+    {dateTime2, data2, newDateTime2, newData2, nil},
+  }
 
-	var dateTime2 []time.Time
-	var data2 []float64
-
-	for index := 0; index < 60; index++ {
-		dateTime2 = append(dateTime2, tempDateTime)
-		tempDateTime = tempDateTime.Add(1 * time.Hour)
-
-		if index < 24 {
-			data2 = append(data2, 50.00)
-		} else if index < 48 {
-			data2 = append(data2, 150.00)
-		} else {
-			data2 = append(data2, 100.00)
-		}
-	}
-
-	tempDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
-
-	var newDateTime2 []time.Time
-	var newData2 []float64
-
-	for index := 0; index < 24; index++ {
-		newDateTime2 = append(newDateTime2, tempDateTime)
-		tempDateTime = tempDateTime.Add(1 * time.Hour)
-		newData2 = append(newData2, 100.00)
-	}
-
-	// Table tests
-	var tTests = []struct {
-		dateTime         []time.Time
-		data             []float64
-		expectedDateTime []time.Time
-		expectedData     []float64
-	}{
-		{dateTime1, data1, newDateTime1, newData1},
-		{dateTime2, data2, newDateTime2, newData2},
-	}
-
-	// Test with all values in the table
+  // Test with all values in the table
 	for _, table := range tTests {
 		newDateTime, newData, err := AverageDay(table.dateTime, table.data)
 
-		if err != nil {
-			t.Error("Expected error = nil.")
-		} else {
-			if !sliceTimeEquals(newDateTime, table.expectedDateTime) {
-				t.Error(
-					"Different DateTime Slices.",
-				)
-			}
-			if !sliceFloatEquals(newData, table.expectedData) {
-				t.Error(
-					"Different Data Slices.",
-				)
-			}
-		}
+    if !sliceTimeEquals(newDateTime, table.newDateTime) {
+			t.Error("New DateTime is different.")
+    }
+
+    if !sliceFloatEquals(newData, table.newData) {
+  		t.Error("New Data is different.")
+    }
+
+    if table.err == nil && err != nil {
+  		t.Error(
+        "Expected error = nil",
+        "Received error = ", err,
+      )
+    } else if table.err != nil && err == nil {
+  		t.Error(
+        "Expected error = ", table.err,
+        "Received error = nil",
+      )
+    }
 	}
 }
 
@@ -1116,14 +1084,10 @@ func TestFilterDataByDateTime(t *testing.T) {
 			t.Error("Expected error = nil.")
 		} else {
 			if !sliceTimeEquals(newDateTime, table.newDateTime) {
-				t.Error(
-					"Different DateTime Slices.",
-				)
+				t.Error("Different DateTime Slices.")
 			}
 			if !sliceFloatEquals(newData, table.newData) {
-				t.Error(
-					"Different Data Slices.",
-				)
+				t.Error("Different Data Slices.")
 			}
 		}
 	}
