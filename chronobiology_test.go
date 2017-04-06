@@ -810,7 +810,7 @@ func TestIntradailyVariability(t *testing.T) {
         tempDateTime   = tempDateTime.Add(60 * time.Second)
     }
 
-    dateTime30secs, data30secs, err := ConvertDataBasedOnEpoch(dateTime60secs, data60secs, 30)
+    dateTime30secs, data30secs, _ := ConvertDataBasedOnEpoch(dateTime60secs, data60secs, 30)
 
     // Table tests
     var tTests = []struct {
@@ -1567,7 +1567,7 @@ func TestInterdailyStability(t *testing.T) {
         tempDateTime = tempDateTime.Add(1 * time.Hour)
     }
 
-    is, err = InterdailyStability(dateTime, data)
+    is, _ = InterdailyStability(dateTime, data)
 
     // Table tests
     tTests = []struct {
