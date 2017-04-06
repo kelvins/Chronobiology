@@ -1,10 +1,10 @@
 package chronobiology
 
 import (
+	"errors"
 	"math"
 	"reflect"
 	"testing"
-  "errors"
 	"time"
 )
 
@@ -851,116 +851,116 @@ func TestAverageDay(t *testing.T) {
 	utc, _ := time.LoadLocation("UTC")
 	currentDateTime := time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-  var tempDateTime []time.Time
+	var tempDateTime []time.Time
 	var tempData []float64
 
 	for index := 0; index < 20; index++ {
-		tempDateTime    = append(tempDateTime, currentDateTime)
-		tempData        = append(tempData, 35.50)
+		tempDateTime = append(tempDateTime, currentDateTime)
+		tempData = append(tempData, 35.50)
 		currentDateTime = currentDateTime.Add(1 * time.Hour)
 	}
 
-  /* Test 1 */
+	/* Test 1 */
 
-  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+	currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-  var dateTime1 []time.Time
-  var data1 []float64
+	var dateTime1 []time.Time
+	var data1 []float64
 
-  for index := 0; index < 72; index++ {
-    dateTime1 = append(dateTime1, currentDateTime)
-    currentDateTime = currentDateTime.Add(1 * time.Hour)
+	for index := 0; index < 72; index++ {
+		dateTime1 = append(dateTime1, currentDateTime)
+		currentDateTime = currentDateTime.Add(1 * time.Hour)
 
-    if index < 24 {
-      data1 = append(data1, 45.50)
-    } else if index < 48 {
-      data1 = append(data1, 102.50)
-    } else {
-      data1 = append(data1, 86.50)
-    }
-  }
+		if index < 24 {
+			data1 = append(data1, 45.50)
+		} else if index < 48 {
+			data1 = append(data1, 102.50)
+		} else {
+			data1 = append(data1, 86.50)
+		}
+	}
 
-  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+	currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-  var newDateTime1 []time.Time
-  var newData1 []float64
+	var newDateTime1 []time.Time
+	var newData1 []float64
 
-  for index := 0; index < 24; index++ {
-    newDateTime1 = append(newDateTime1, currentDateTime)
-    currentDateTime = currentDateTime.Add(1 * time.Hour)
-    newData1 = append(newData1, 78.1667)
-  }
+	for index := 0; index < 24; index++ {
+		newDateTime1 = append(newDateTime1, currentDateTime)
+		currentDateTime = currentDateTime.Add(1 * time.Hour)
+		newData1 = append(newData1, 78.1667)
+	}
 
-  /* Test 2 */
+	/* Test 2 */
 
-  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+	currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-  var dateTime2 []time.Time
-  var data2 []float64
+	var dateTime2 []time.Time
+	var data2 []float64
 
-  for index := 0; index < 60; index++ {
-    dateTime2 = append(dateTime2, currentDateTime)
-    currentDateTime = currentDateTime.Add(1 * time.Hour)
+	for index := 0; index < 60; index++ {
+		dateTime2 = append(dateTime2, currentDateTime)
+		currentDateTime = currentDateTime.Add(1 * time.Hour)
 
-    if index < 24 {
-      data2 = append(data2, 50.00)
-    } else if index < 48 {
-      data2 = append(data2, 150.00)
-    } else {
-      data2 = append(data2, 100.00)
-    }
-  }
+		if index < 24 {
+			data2 = append(data2, 50.00)
+		} else if index < 48 {
+			data2 = append(data2, 150.00)
+		} else {
+			data2 = append(data2, 100.00)
+		}
+	}
 
-  currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
+	currentDateTime = time.Date(2015, 1, 1, 0, 0, 0, 0, utc)
 
-  var newDateTime2 []time.Time
-  var newData2 []float64
+	var newDateTime2 []time.Time
+	var newData2 []float64
 
-  for index := 0; index < 24; index++ {
-    newDateTime2 = append(newDateTime2, currentDateTime)
-    currentDateTime = currentDateTime.Add(1 * time.Hour)
-    newData2 = append(newData2, 100.00)
-  }
+	for index := 0; index < 24; index++ {
+		newDateTime2 = append(newDateTime2, currentDateTime)
+		currentDateTime = currentDateTime.Add(1 * time.Hour)
+		newData2 = append(newData2, 100.00)
+	}
 
-  // Table tests
-  var tTests = []struct {
-    dateTime    []time.Time
-    data        []float64
-    newDateTime []time.Time
-    newData     []float64
-    err         error
-  }{
-    {nil, nil, nil, nil, errors.New("Empty")},
-    {tempDateTime, tempData, nil, nil, errors.New("LessThan1Day")},
-    {[]time.Time{currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("DifferentSize")},
-    {[]time.Time{currentDateTime, currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("InvalidEpoch")},
-    {dateTime1, data1, newDateTime1, newData1, nil},
-    {dateTime2, data2, newDateTime2, newData2, nil},
-  }
+	// Table tests
+	var tTests = []struct {
+		dateTime    []time.Time
+		data        []float64
+		newDateTime []time.Time
+		newData     []float64
+		err         error
+	}{
+		{nil, nil, nil, nil, errors.New("Empty")},
+		{tempDateTime, tempData, nil, nil, errors.New("LessThan1Day")},
+		{[]time.Time{currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("DifferentSize")},
+		{[]time.Time{currentDateTime, currentDateTime}, []float64{35.5, 35.5}, nil, nil, errors.New("InvalidEpoch")},
+		{dateTime1, data1, newDateTime1, newData1, nil},
+		{dateTime2, data2, newDateTime2, newData2, nil},
+	}
 
-  // Test with all values in the table
+	// Test with all values in the table
 	for _, table := range tTests {
 		newDateTime, newData, err := AverageDay(table.dateTime, table.data)
 
-    if !sliceTimeEquals(newDateTime, table.newDateTime) {
+		if !sliceTimeEquals(newDateTime, table.newDateTime) {
 			t.Error("New DateTime is different.")
-    }
+		}
 
-    if !sliceFloatEquals(newData, table.newData) {
-  		t.Error("New Data is different.")
-    }
+		if !sliceFloatEquals(newData, table.newData) {
+			t.Error("New Data is different.")
+		}
 
-    if table.err == nil && err != nil {
-  		t.Error(
-        "Expected error = nil",
-        "Received error = ", err,
-      )
-    } else if table.err != nil && err == nil {
-  		t.Error(
-        "Expected error = ", table.err,
-        "Received error = nil",
-      )
-    }
+		if table.err == nil && err != nil {
+			t.Error(
+				"Expected error = nil",
+				"Received error = ", err,
+			)
+		} else if table.err != nil && err == nil {
+			t.Error(
+				"Expected error = ", table.err,
+				"Received error = nil",
+			)
+		}
 	}
 }
 
